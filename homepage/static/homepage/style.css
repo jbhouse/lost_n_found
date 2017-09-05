@@ -1,4 +1,21 @@
-#navbar {
-
-  color: red;
+.customnav {
 }
+
+.nav-element {
+
+}
+
+.login-form {
+  position: relative;
+  left: 60%;
+}
+
+.signup-form {
+  position: relative;
+  left: 88.1%;
+}
+
+/*#hi{
+  position: relative;
+  margin-right: 800px;
+}*/
