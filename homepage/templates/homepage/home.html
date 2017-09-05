@@ -19,8 +19,12 @@
         padding: 0;
       }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
+    <script>
+
+    </script>
     <link rel="stylesheet" type="text/css" href="{% static 'homepage/style.css' %}" />
     <div class="container">
       <div class="customnav">
@@ -34,7 +38,7 @@
                 <input type="password" name="password" value="" placeholder="password">
                 <input type="submit" name="submit" value="log in">
                 or
-                <a href="#">Sign Up</a>
+                <a id="signup" href="{% url 'accounts:signup' %}">Sign Up</a>
               </p>
             </form>
           {% endif %}
