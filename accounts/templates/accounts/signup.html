@@ -1,35 +1,39 @@
-{% extends 'base.html' %}
-{% load bootstrap3 %}
+{% load static %}<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>signup</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    {% load bootstrap3 %}
+    <div class="container">
+      <h1>Sign Up</h1>
 
-{% block javascript %}
-<script>
-  $("#id_username").change(function () {
-    var username = $(this).val();
+      <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" class="btn btn-default" value="Sign Up">
+      </form>
+    </div>
+    <script>
+      $("#id_username").change(function () {
+        var username = $(this).val();
 
-    $.ajax({
-      url: '{% url 'accounts:validate_username' %}',
-      data: {
-        'username': username
-      },
-      dataType: 'json',
-      success: function (data) {
-        if (data.is_taken) {
-          alert(data.error_message);
-        }
-      }
-    });
+        $.ajax({
+          url: '{% url 'accounts:validate_username' %}',
+          data: {
+            'username': username
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.is_taken) {
+              alert(data.error_message);
+            }
+          }
+        });
 
-  });
-</script>
-{% endblock %}
-
-<div class="container">
-  <h1>Sign Up</h1>
-
-  <form method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    <input type="submit" class="btn btn-default" value="Sign Up">
-  </form>
-
-</div>
+      });
+    </script>
+  </body>
+</html>
