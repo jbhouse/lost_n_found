@@ -10,7 +10,7 @@
       #map {
         height: 95%;
         width: 60%;
-        margin-top: -2.9%;
+        margin-top: -1.7%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -22,27 +22,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
-    <script>
-
-    </script>
     <link rel="stylesheet" type="text/css" href="{% static 'homepage/style.css' %}" />
     <div class="container">
       <div class="customnav">
-        <p class=nav-element>
           {% if user.is_authenticated %}
-            <h1 class=login-form>hi there user</h1>
+          <div>
+            <a class="logout-btn" href="{% url 'accounts:logout' %}"class="btn btn-simple">Log Out</a>
+          </div>
           {% else %}
-            <form class="login-form" action="home.html" method="post">
-              <p>
-                <input type="text" name="user name" value="" placeholder="username">
-                <input type="password" name="password" value="" placeholder="password">
-                <input type="submit" name="submit" value="log in">
-                or
-                <a id="signup" href="{% url 'accounts:signup' %}">Sign Up</a>
-              </p>
-            </form>
+          {% include "accounts/login.html" %}
           {% endif %}
-        </p>
       </div>
     </div>
     <div id="map"></div>
@@ -103,6 +92,23 @@
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw&callback=initMap">
+    </script>
+    <script>
+      $('.login-form').on('submit',function(e){
+        e.preventDefault()
+        var that = $(this)
+        console.log('accounts/'+that.attr('action'))
+        login()
+        function login() {
+          $.ajax({
+            url  : 'accounts/'+that.attr('action'),
+            type : "POST",
+            success: function() {
+              console.log('success')
+            }
+          })
+        }
+      })
     </script>
   </body>
 </html>
