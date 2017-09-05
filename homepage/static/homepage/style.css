@@ -1,8 +1,6 @@
-.customnav {
-}
-
 .nav-element {
-
+  position: relative;
+  left: 60%;
 }
 
 .login-form {
@@ -10,12 +8,7 @@
   left: 60%;
 }
 
-.signup-form {
-  position: relative;
-  left: 88.1%;
-}
-
-/*#hi{
-  position: relative;
-  margin-right: 800px;
-}*/
+.logout-btn {
+    position: relative;
+    left: 95%;
+  }
