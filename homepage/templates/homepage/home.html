@@ -8,8 +8,9 @@
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
       #map {
-        height: 100%;
-        width: 70%;
+        height: 95%;
+        width: 60%;
+        margin-top: -2.9%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -21,10 +22,26 @@
   </head>
   <body>
     <link rel="stylesheet" type="text/css" href="{% static 'homepage/style.css' %}" />
-    <div id="map"></div>
-    <div id="navbar">
-      <h1>hi</h1>
+    <div class="container">
+      <div class="customnav">
+        <p class=nav-element>
+          {% if user.is_authenticated %}
+            <h1 class=login-form>hi there user</h1>
+          {% else %}
+            <form class="login-form" action="home.html" method="post">
+              <p>
+                <input type="text" name="user name" value="" placeholder="username">
+                <input type="password" name="password" value="" placeholder="password">
+                <input type="submit" name="submit" value="log in">
+                or
+                <a href="#">Sign Up</a>
+              </p>
+            </form>
+          {% endif %}
+        </p>
+      </div>
     </div>
+    <div id="map"></div>
     <script>
 
       function initMap() {
