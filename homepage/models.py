@@ -4,13 +4,13 @@ User = get_user_model()
 # Create your models here.
 
 class FoundItemManager(models.Manager):
-    def create_found_item(self, user):
-        found_item = self.create(user = user)
+    def create_found_item(self, user, latitude, longitude):
+        found_item = self.create(user = user, latitude = latitude, longitude = longitude)
         return found_item
 
 class LostItemManager(models.Manager):
-    def create_lost_item(self, user):
-        lost_item = self.create(user = user)
+    def create_lost_item(self, user, latitude, longitude):
+        lost_item = self.create(user = user, latitude = latitude, longitude = longitude)
         return lost_item
 
 class FoundItem(models.Model):

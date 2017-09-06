@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^$', Home.as_view(), name='home'),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^createlostitem/', views.CreateLostItem, name='createlostitem'),
+    url(r'^createfounditem/', views.CreateFoundItem, name='createfounditem'),
 ]
