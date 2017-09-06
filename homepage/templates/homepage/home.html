@@ -76,26 +76,31 @@
       var lostItems = "{{ lost_items_array|safe }}"
       var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
       // this splits the string every 4th comma, since we have 4 pieces of info per hash
-      // lostItemsArray.splice(0,1)
-      // lostItemsArray.splice(-1,1)
       var foundItems = "{{ found_items_array|safe }}"
       var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
       for (var i=0; i<foundItemsArray.length; i++) {
         if (i == 0) {
-          foundItemsArray[i] = foundItemsArray[i].slice(1,-1)
+          foundItemsArray[i] = foundItemsArray[i].slice(1,foundItemsArray[i].length)
         } else if (i == (foundItemsArray.length-1)) {
           foundItemsArray[i] = foundItemsArray[i].slice(0,-1)
         }
+        foundItemsArray[i] = foundItemsArray[i].match(/[^,]+/g);
       }
       for (var i=0; i<lostItemsArray.length; i++) {
         if (i == 0) {
-          lostItemsArray[i] = lostItemsArray[i].slice(1,-1)
+          lostItemsArray[i] = lostItemsArray[i].slice(1,lostItemsArray[i].length)
         } else if (i == (lostItemsArray.length-1)) {
           lostItemsArray[i] = lostItemsArray[i].slice(0,-1)
         }
+        lostItemsArray[i] = lostItemsArray[i].match(/[^,]+/g);
       }
-      console.log(foundItemsArray)
-      console.log(lostItemsArray)
+      for (var i=0; i<lostItemsArray.length; i++) {
+        locations.push({lat: parseFloat(lostItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(lostItemsArray[i][2].match(/[^:]+/g)[1])})
+      }
+      for (var i=0; i<foundItemsArray.length; i++) {
+        locations.push({lat: parseFloat(foundItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(foundItemsArray[i][2].match(/[^:]+/g)[1])})
+      }
+      console.log(locations)
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>
