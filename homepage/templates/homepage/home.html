@@ -27,7 +27,7 @@
       <div class="customnav">
           {% if user.is_authenticated %}
           <div>
-              <form class="locator" method="post">
+              <form id="createlostitem/" class="locator" method="post">
                 {% csrf_token %}
                 <input type="textarea" name="description" placeholder="description" value="">
                 <input id="latitude" type="text" name="latitude" placeholder="latitude" value="">
@@ -36,7 +36,7 @@
               </form>
           </div>
           <div>
-              <form class="locator" method="post">
+              <form id="createfounditem/" class="locator" method="post">
                 {% csrf_token %}
                 <input type="textarea" name="description" placeholder="description" value="">
                 <input id="latitude" type="text" name="latitude" placeholder="latitude" value="">
@@ -47,6 +47,8 @@
           <div class="nav-element">
             <a class="logout-btn" href="{% url 'accounts:logout' %}"class="btn btn-simple">Log Out</a>
           </div>
+          <p>lost items: {{lost_items_array}}</p>
+          <p>found items: {{found_items_array}}</p>
           {% else %}
           {% include "accounts/login.html" %}
           {% endif %}
@@ -54,21 +56,12 @@
     </div>
     <div id="map"></div>
     <script>
-
       function initMap() {
-
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 6,
           center: {lat: 42.174307, lng: -88.559105}
         });
-
-        // Create an array of alphabetical characters used to label the markers.
         var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        // Add some markers to the map.
-        // Note: The code uses the JavaScript Array.prototype.map() method to
-        // create an array of markers based on a given "locations" array.
-        // The map() method here has nothing to do with the Google Maps API.
         var markers = locations.map(function(location, i) {
           return new google.maps.Marker({
             position: location,
@@ -76,35 +69,33 @@
           });
         });
 
-        // Add a marker clusterer to manage the markers.
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
-      var locations = [
-        {lat: 41.563910, lng: -88.154112},
-        {lat: 41.718234, lng: -88.363181},
-        {lat: 41.727111, lng: -88.371124},
-        {lat: 41.848588, lng: -88.209834},
-        {lat: 41.851702, lng: -88.216968},
-        {lat: 41.671264, lng: -88.863657},
-        {lat: 41.304724, lng: -88.662905},
-        {lat: 42.817685, lng: -88.699196},
-        {lat: 42.828611, lng: -88.790222},
-        {lat: 42.750000, lng: -89.116667},
-        {lat: 42.759859, lng: -89.128708},
-        {lat: 42.765015, lng: -89.133858},
-        {lat: 42.770104, lng: -89.143299},
-        {lat: 42.773700, lng: -89.145187},
-        {lat: 42.774785, lng: -89.137978},
-        {lat: 42.819616, lng: -89.968119},
-        {lat: 40.330766, lng: -89.695692},
-        {lat: 40.927193, lng: -89.053218},
-        {lat: 40.330162, lng: -90.865694},
-        {lat: 40.734358, lng: -90.439506},
-        {lat: 40.734358, lng: -90.501315},
-        {lat: 40.735258, lng: -90.438000},
-        {lat: 40.999792, lng: -90.463352}
-      ]
+      var locations = []
+      var lostItems = "{{ lost_items_array|safe }}"
+      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
+      // this splits the string every 4th comma, since we have 4 pieces of info per hash
+      // lostItemsArray.splice(0,1)
+      // lostItemsArray.splice(-1,1)
+      var foundItems = "{{ found_items_array|safe }}"
+      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
+      for (var i=0; i<foundItemsArray.length; i++) {
+        if (i == 0) {
+          foundItemsArray[i] = foundItemsArray[i].slice(1,-1)
+        } else if (i == (foundItemsArray.length-1)) {
+          foundItemsArray[i] = foundItemsArray[i].slice(0,-1)
+        }
+      }
+      for (var i=0; i<lostItemsArray.length; i++) {
+        if (i == 0) {
+          lostItemsArray[i] = lostItemsArray[i].slice(1,-1)
+        } else if (i == (lostItemsArray.length-1)) {
+          lostItemsArray[i] = lostItemsArray[i].slice(0,-1)
+        }
+      }
+      console.log(foundItemsArray)
+      console.log(lostItemsArray)
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>
@@ -119,7 +110,7 @@
         createLostItem();
         function createLostItem() {
           $.ajax({
-            url  : "createlostitem/",
+            url  : that.attr('id'),
             type : "POST",
             data : data,
             success : function(json) {
@@ -152,14 +143,12 @@
       $('.login-form').on('submit',function(e){
         e.preventDefault();
         var that = $(this)
-        console.log('accounts/'+that.attr('action'))
         login()
         function login() {
           $.ajax({
             url  : 'accounts/'+that.attr('action'),
             type : "POST",
             success: function() {
-              console.log('success')
             }
           })
         }
