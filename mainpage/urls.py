@@ -16,9 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from homepage.views import Home
+from homepage import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', Home.as_view(), name='home'),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+    url(r'^createlostitem/', views.CreateLostItem, name='createlostitem'),
 ]
