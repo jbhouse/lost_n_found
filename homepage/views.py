@@ -33,12 +33,14 @@ def CreateLostItem(request, **kwargs):
             user = request.user
             latitude = request.POST.get('latitude')
             longitude = request.POST.get('longitude')
+            description = request.POST.get('description')
             new_lost_item = LostItem.objects.create_lost_item(user, latitude, longitude)
-            new_lost_item.description = request.POST.get('description')
+            new_lost_item.description = description
             new_lost_item.save
             response_data['user_id'] = user.pk
             response_data['latitude'] = latitude
             response_data['longitude'] = longitude
+            response_data['description'] = description
         return JsonResponse(response_data)
 
 
@@ -50,10 +52,12 @@ def CreateFoundItem(request, **kwargs):
             user = request.user
             latitude = request.POST.get('latitude')
             longitude = request.POST.get('longitude')
+            description = request.POST.get('description')
             new_found_item = FoundItem.objects.create_found_item(user, latitude, longitude)
-            new_found_item.description = request.POST.get('description')
+            new_found_item.description = description
             new_found_item.save
             response_data['user_id'] = user.pk
             response_data['latitude'] = latitude
             response_data['longitude'] = longitude
+            response_data['description'] = description
         return JsonResponse(response_data)

@@ -10,7 +10,7 @@
       #map {
         height: 95%;
         width: 60%;
-        margin-top: -1.7%;
+        margin-top: -1.4%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -123,30 +123,30 @@
             type : "POST",
             data : data,
             success : function(json) {
-              console.log('success')
-              console.log(json)
+              that.find('input[name="description"]').val('')
+              that.find('input[name="latitude"]').val('')
+              that.find('input[name="longitude"]').val('')
+              var latitude = json['latitude']
+              var longitude = json['longitude']
+              var description = json['description']
+              var myLatlng = new google.maps.LatLng(latitude,longitude);
+              var mapOptions = {
+                zoom: 6,
+                center: myLatlng
+              }
+              var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+              var marker = new google.maps.Marker({
+                  position: myLatlng,
+                  title:"Hello World!"
+              });
+
+              // To add the marker to the map, call setMap();
+              marker.setMap(map);
             }
           })
         }
-        // // var that = $(this)
-        // var latitude = document.getElementById("latitude").value;
-        // var longitude = document.getElementById("longitude").value;
         // // var myLatLng = {lat: parseInt(latitude), lng: parseInt(longitude)}
-        // var myLatlng = new google.maps.LatLng(parseInt(latitude),parseInt(longitude));
-        // var mapOptions = {
-        //   zoom: 6,
-        //   center: myLatlng
-        // }
-        // var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        //
-        // var marker = new google.maps.Marker({
-        //     position: myLatlng,
-        //     title:"Hello World!"
-        // });
-        //
-        // // To add the marker to the map, call setMap();
-        // marker.setMap(map);
-
       })
 
       $('.login-form').on('submit',function(e){
