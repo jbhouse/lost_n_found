@@ -6,16 +6,31 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
-    <h1>hi {{user.username}} <a href="{% url 'home' %}">Home</a></h1>
-    <h3>Feel free to delete any items that have been reunited with their owner</h3>
-    <p><b>Items you've found</b></p>
-    {% for item in user_found_items %}
-      {% include "accounts/_item.html" with item=item name="founditem" %}
-    {% endfor %}
-    <p><b>Items you've lost</b></p>
-    {% for item in user_lost_items %}
-      {% include "accounts/_item.html" with item=item name="lostitem" %}
-    {% endfor %}
+    <div class="">
+      <h1>hi {{user.username}} <a href="{% url 'home' %}">Home</a></h1>
+      <h3>Feel free to delete any items that have been reunited with their owner</h3>
+    </div>
+    <div class="user-found-item-list">
+      <p><b>Items you've found</b></p>
+      {% for item in user_found_items %}
+        {% include "accounts/_item.html" with item=item name="founditem" %}
+      {% endfor %}
+    </div>
+    <div class="user-lost-item-list">
+      <p><b>Items you've lost</b></p>
+      {% for item in user_lost_items %}
+        {% include "accounts/_item.html" with item=item name="lostitem" %}
+      {% endfor %}
+    </div>
+    <p></p>
+    <div class="user-contact-info">
+      <form method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        <button type="submit">Save changes</button>
+      </form>
+    </div>
     <script>
       $('.founditem').on('click',function(e){
         e.preventDefault();

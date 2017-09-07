@@ -1,7 +1,10 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import ViewProfile
+# from .views import ViewProfile
+
+    # 1. Add an import:  from my_app import views
+    # 2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
 
 app_name = 'accounts'
 
@@ -10,7 +13,7 @@ urlpatterns = [
     url(r"logout/$", auth_views.LogoutView.as_view(), name="logout"),
     url(r"signup/$", views.SignUp.as_view(), name="signup"),
     url(r'^ajax/validate_username/$', views.validate_username, name='validate_username'),
-    url(r'^profile/(?P<pk>\d+)/$', ViewProfile.as_view(), name='profile'),
+    url(r'^profile/(?P<pk>\d+)/$', views.view_profile, name='profile'),
     url(r'^delete/founditem/(?P<pk>\d+)/$', views.DeleteFoundItem, name='found_delete'),
     url(r'^delete/lostitem/(?P<pk>\d+)/$', views.DeleteLostItem, name='lost_delete'),
 ]
