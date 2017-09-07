@@ -22,8 +22,8 @@
         {% include "accounts/_item.html" with item=item name="lostitem" %}
       {% endfor %}
     </div>
-    <p></p>
     <div class="user-contact-info">
+      <h2>Edit your information</h2>
       <form method="post">
         {% csrf_token %}
         {{ user_form.as_p }}
