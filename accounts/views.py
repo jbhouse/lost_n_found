@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.views import generic
 from django.views import View
 from django.shortcuts import render
+from homepage.models import FoundItem,LostItem
 
 from . import forms
 
@@ -41,11 +42,21 @@ class ViewProfile(generic.DetailView):
         return render(request, 'accounts/profile.html', context)
 
 def DeleteFoundItem(request, **kwargs):
-    print('/'*50)
-    print('/'*50)
-    print('/'*50)
+    founditem = get_object_or_404(FoundItem, pk=kwargs['pk'])
+    founditem.delete()
+    user_id = founditem.user.pk
+    if request.is_ajax():
+        response_data = {}
+        response_data['pk'] = kwargs['pk']
+        return JsonResponse(response_data)
+    return redirect('accounts:profile', pk=user_id)
 
 def DeleteLostItem(request, **kwargs):
-    print('/'*50)
-    print('/'*50)
-    print('/'*50)
+    lostitem = get_object_or_404(LostItem, pk=kwargs['pk'])
+    lostitem.delete()
+    user_id = lostitem.user.pk
+    if request.is_ajax():
+        response_data = {}
+        response_data['pk'] = kwargs['pk']
+        return JsonResponse(response_data)
+    return redirect('accounts:profile', pk=user_id)

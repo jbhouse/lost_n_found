@@ -20,16 +20,16 @@
       $('.founditem').on('click',function(e){
         e.preventDefault();
         var that = $(this)
-        var csrf_token = that.parent().parent().children()[0]
         deleteFoundItem();
         function deleteFoundItem() {
           $.ajax({
             url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
             type : "DELETE",
-            // data : {'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val()},
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
             success : function(json) {
-              console.log(success)
-              // return here
+              that.parent().detach()
             }
           })
         }
@@ -37,9 +37,17 @@
       $('.lostitem').on('click',function(e){
         e.preventDefault();
         var that = $(this)
+        deleteLostItem();
         function deleteLostItem() {
           $.ajax({
-
+            url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
+            type : "DELETE",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function(json) {
+              that.parent().detach()
+            }
           })
         }
       })
