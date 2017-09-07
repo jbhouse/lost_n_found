@@ -42,9 +42,11 @@
               </form>
           </div>
           <div class="nav-element">
-            <a class="logout-btn" href="{% url 'accounts:logout' %}"class="btn btn-simple">Log Out</a>
+              <a class="logout-btn" href="{% url 'accounts:logout' %}"class="btn btn-simple">Log Out</a>
           </div>
-          <div id="pin-info" class="nav-element"></div>
+          <div class="nav-element">
+            <a class='view-profile' href="{% url 'accounts:profile' pk=request.user.pk %}">View Profile</a>
+          </div>
           {% else %}
           {% include "accounts/login.html" %}
           {% endif %}
@@ -55,6 +57,7 @@
     var labels = [];
     var itemDescriptions = [];
     var userIds = [];
+    var locations = [];
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 8,
@@ -85,7 +88,8 @@
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
-      var locations = []
+      // if you value your sanity, avoid the lump of regex slicing presented below.
+      // just accept that it works.
       var lostItems = "{{ lost_items_array|safe }}"
       var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
       // this splits the string every 4th comma, since we have 4 pieces of info per hash
@@ -119,7 +123,6 @@
         itemDescriptions.push(foundItemsArray[i][0].match(/[^:]+/g)[1])
         userIds.push(foundItemsArray[i][3].match(/[^:]+/g)[1].slice(1,-1))
       }
-      // console.log(labels)
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>

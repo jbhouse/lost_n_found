@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Profile</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>hi {{user.username}} <a href="{% url 'home' %}">Home</a></h1>
+    <h3>Feel free to delete any items that have been reunited with their owner</h3>
+    <p><b>Items you've found</b></p>
+    {% for item in user_found_items %}
+      {% include "accounts/_item.html" with item=item name="founditem" %}
+    {% endfor %}
+    <p><b>Items you've lost</b></p>
+    {% for item in user_lost_items %}
+      {% include "accounts/_item.html" with item=item name="lostitem" %}
+    {% endfor %}
+    <script>
+      $('.founditem').on('click',function(e){
+        e.preventDefault();
+        var that = $(this)
+        var csrf_token = that.parent().parent().children()[0]
+        deleteFoundItem();
+        function deleteFoundItem() {
+          $.ajax({
+            url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
+            type : "DELETE",
+            // data : {'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val()},
+            success : function(json) {
+              console.log(success)
+              // return here
+            }
+          })
+        }
+      })
+      $('.lostitem').on('click',function(e){
+        e.preventDefault();
+        var that = $(this)
+        function deleteLostItem() {
+          $.ajax({
+
+          })
+        }
+      })
+    </script>
+  </body>
+</html>

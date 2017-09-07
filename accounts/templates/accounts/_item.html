@@ -1,0 +1,7 @@
+<form method="delete">
+  {% csrf_token %}
+  <p>
+    {{item.description}}
+    <a id="{{item.id}}" class="{{name}}" href="#" title="delete">delete</a>
+  </p>
+</form>
