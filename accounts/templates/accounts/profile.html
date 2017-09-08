@@ -24,7 +24,7 @@
     </div>
     <div class="user-contact-info">
       <h2>Edit your information</h2>
-      <form method="post">
+      <form id="edit-user-info-{{user.id}}" method="post">
         {% csrf_token %}
         {{ user_form.as_p }}
         {{ profile_form.as_p }}
@@ -32,6 +32,34 @@
       </form>
     </div>
     <script>
+    $('#edit-user-info-{{user.id}}').on('submit',function(e){
+      e.preventDefault();
+      var that = $(this)
+      var idLength = that.attr('id').length
+      var userName = document.getElementById("id_username").value;
+      var emailAddress = document.getElementById("id_email").value;
+      var phoneNumber = document.getElementById("id_phone_number").value;
+      var emailableOption = document.getElementById("id_emailable").checked;
+      var textableOption = document.getElementById("id_textable").checked;
+      updateUserInfo();
+      function updateUserInfo() {
+        $.ajax({
+          url  : '/accounts/profile/'+that.attr('id').slice((idLength-1),idLength)+"/",
+          type : "POST",
+          data : {
+            pk : that.attr('id').slice((idLength-1),idLength),
+            phoneNumber : phoneNumber,
+            emailableOption : emailableOption,
+            textableOption : textableOption,
+            userName : userName,
+            emailAddress : emailAddress
+          },
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+          }
+        })
+      }
+    })
       $('.founditem').on('click',function(e){
         e.preventDefault();
         var that = $(this)

@@ -32,6 +32,26 @@ class SignUp(CreateView):
 @login_required
 @transaction.atomic
 def view_profile(request, **kwargs):
+    if request.is_ajax():
+        this_user = get_object_or_404(User, pk=kwargs['pk'])
+        response_data = {}
+        if this_user.email != request.POST['emailAddress']:
+            this_user.email = request.POST['emailAddress']
+        if this_user.username != request.POST['userName']:
+            this_user.username = request.POST['userName']
+        this_user.profile.phone_number = request.POST['phoneNumber']
+        if request.POST['emailableOption'] == 'true':
+            this_user.profile.emailable = True
+        else:
+            this_user.profile.emailable = False
+        if request.POST['textableOption'] == 'true':
+            this_user.profile.textable = True
+        else:
+            this_user.profile.textable = False
+        this_user.save()
+        this_user.profile.save()
+        response_data['pk'] = kwargs['pk']
+        return JsonResponse(response_data)
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
@@ -45,9 +65,6 @@ def view_profile(request, **kwargs):
         user_lost_items = User.objects.all().prefetch_related('lostitems').get(id = kwargs['pk'])
         user_found_items = User.objects.all().prefetch_related('founditems').get(id = kwargs['pk'])
         users = User.objects.all().select_related('profile').get(id = kwargs['pk'])
-        print('/'*88)
-        print(users.profile.emailable)
-        print('/'*88)
     return render(request, 'accounts/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
