@@ -13,7 +13,6 @@
     $('.inbox-messages').on('click','a',function(e){
       e.preventDefault();
       that = $(this)
-      console.log('not today')
       delete_message();
 
       function delete_message(){
@@ -24,7 +23,8 @@
             xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
           },
           success : function(json) {
-            that.parent().parent().detach()
+            document.getElementById('inbox-message-'+json.pk).remove()
+            document.getElementById('outbox-message-'+json.pk).remove()
           }
         })
       }
@@ -47,10 +47,10 @@
             $('#new-message-div').hide();
             $('#new-message-button').show();
             if (json.recipient_id == json.sender_id) {
-              $('.inbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: <a href='/accounts/profile/"+json.sender_id+"'>"+json.username+"</a></p><p><a href='/accounts/profile/"+json.sender_id+"/'></a></p><p><a href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
-              $('.outbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: <a href='/accounts/profile/"+json.sender_id+"'>"+json.username+"</a></p><p><a href='/accounts/profile/"+json.sender_id+"/'></a></p><p><a href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
+              $('.inbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p><p><a class='pm-delete' href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
+              $('.outbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p><p><a class='pm-delete' href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
             } else {
-              $('.outbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: <a href='/accounts/profile/"+json.sender_id+"'>"+json.username+"</a></p><p><a href='/accounts/profile/"+json.sender_id+"/'></a></p><p><a href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
+              $('.outbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p></div>")
             }
           }
         })
