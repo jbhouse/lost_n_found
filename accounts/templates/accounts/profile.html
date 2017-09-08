@@ -7,7 +7,11 @@
   </head>
   <body>
     <div class="">
-      <h1>hi {{user.username}} <a href="{% url 'home' %}">Home</a></h1>
+      <h1 id="user-greeting">hi {{user.username}}</h1>
+      <p>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'private_messages:list' %}">Message Box</a>
+      </p>
       <h3>Feel free to delete any items that have been reunited with their owner</h3>
     </div>
     <div class="user-found-item-list">
@@ -56,6 +60,9 @@
           },
           beforeSend: function (xhr) {
             xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+          },
+          success : function(json) {
+            document.getElementById("user-greeting").innerHTML = 'hi '+json['userName']
           }
         })
       }

@@ -50,6 +50,7 @@ def view_profile(request, **kwargs):
             this_user.profile.textable = False
         this_user.save()
         this_user.profile.save()
+        response_data['userName'] = request.POST['userName']
         response_data['pk'] = kwargs['pk']
         return JsonResponse(response_data)
     if request.method == 'POST':
