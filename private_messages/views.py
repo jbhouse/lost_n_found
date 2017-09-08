@@ -46,7 +46,7 @@ class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMi
         context = self.get_context_data(**kwargs)
         context['message_form'] = message_form
         context['users_inbox'] = message_recipient.recipient.all().order_by('-created_at')
-        context['users_outbox'] = message_sender.sender.all().order_by('-created_at')
+        context['users_inbox'] = message_sender.sender.all().order_by('-created_at')
         return self.render_to_response(context)
 
 class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
@@ -58,8 +58,10 @@ class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
         return queryset.filter(recipient = self.request.user)
 
 def DeletePrivateMessage(request, **kwargs):
-    response_data = {}
-    response_data['pk'] = kwargs['pk']
     private_message = get_object_or_404(PrivateMessage, pk=kwargs['pk'])
     private_message.delete()
-    return JsonResponse(response_data)
+    if request.is_ajax():
+        response_data = {}
+        response_data['pk'] = kwargs['pk']
+        return JsonResponse(response_data)
+    return redirect('private_messages:list')    
