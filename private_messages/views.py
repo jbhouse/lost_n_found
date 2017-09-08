@@ -33,6 +33,7 @@ def CreatePrivateMessage(request):
         response_data['message'] = new_pm.message
         response_data['subject'] = new_pm.subject
         response_data['username'] = new_pm.sender.username
+        response_data['recipient'] = new_pm.recipient.username
         return JsonResponse(response_data)
 
 class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMixin):
@@ -46,7 +47,7 @@ class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMi
         context = self.get_context_data(**kwargs)
         context['message_form'] = message_form
         context['users_inbox'] = message_recipient.recipient.all().order_by('-created_at')
-        context['users_inbox'] = message_sender.sender.all().order_by('-created_at')
+        context['users_outbox'] = message_sender.sender.all().order_by('-created_at')
         return self.render_to_response(context)
 
 class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
@@ -64,4 +65,4 @@ def DeletePrivateMessage(request, **kwargs):
         response_data = {}
         response_data['pk'] = kwargs['pk']
         return JsonResponse(response_data)
-    return redirect('private_messages:list')    
+    return redirect('private_messages:list')

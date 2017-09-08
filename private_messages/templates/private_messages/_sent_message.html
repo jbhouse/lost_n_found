@@ -1,9 +1,9 @@
 <div id="outbox-message-{{message.pk}}">
-  <h3 id="subject_line">
+  <h3 class="subject_line">
     subject: <a href="{% url 'private_messages:detail' pk=message.pk %}">{{message.subject}}</a>
   </h3>
   <p>
-    sent by: {{message.sender.username}}
+    sent to: {{message.recipient.username}}
   </p>
   <p>
     {% if privatemessage.recipient.username == request.user.username %}
