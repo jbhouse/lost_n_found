@@ -7,7 +7,7 @@ User = get_user_model()
 from django.http import JsonResponse
 from django.views import generic
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from homepage.models import FoundItem,LostItem
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -29,23 +29,6 @@ class SignUp(CreateView):
     success_url = reverse_lazy("home")
     template_name = "accounts/signup.html"
 
-# @login_required
-# @transaction.atomic
-# class ViewProfile(generic.DetailView):
-#     model = User
-#     template_name = 'accounts/profile.html'
-#     def get(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         def get_context_data(self, **kwargs):
-#             context = super(ViewProfile, self).get_context_data(**kwargs)
-#             self.user_lost_items = User.objects.all().prefetch_related('lostitems').get(id = self.kwargs['pk'])
-#             self.user_found_items = User.objects.all().prefetch_related('founditems').get(id = self.kwargs['pk'])
-#             context['user_lost_items'] = list(self.user_lost_items.lostitems.all())
-#             context['user_found_items'] = list(self.user_found_items.founditems.all())
-#             return context
-#         context = get_context_data(self)
-#         return render(request, 'accounts/profile.html', context)
-
 @login_required
 @transaction.atomic
 def view_profile(request, **kwargs):
@@ -55,16 +38,21 @@ def view_profile(request, **kwargs):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, _('Your profile was successfully updated!'))
-            return redirect('settings:profile')
-        else:
-            messages.error(request, _('Please correct the error below.'))
+            return redirect('accounts:profile', pk=kwargs['pk'])
     else:
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
+        user_lost_items = User.objects.all().prefetch_related('lostitems').get(id = kwargs['pk'])
+        user_found_items = User.objects.all().prefetch_related('founditems').get(id = kwargs['pk'])
+        users = User.objects.all().select_related('profile').get(id = kwargs['pk'])
+        print('/'*88)
+        print(users.profile.emailable)
+        print('/'*88)
     return render(request, 'accounts/profile.html', {
         'user_form': user_form,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'user_lost_items': user_lost_items.lostitems.all(),
+        'user_found_items': user_found_items.founditems.all()
     })
 
 def DeleteFoundItem(request, **kwargs):
