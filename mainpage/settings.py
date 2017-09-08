@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'private_messages',
     'bootstrap3',
     'accounts',
     'homepage',
