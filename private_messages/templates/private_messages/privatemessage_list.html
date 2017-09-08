@@ -5,12 +5,20 @@
 
 {% block javascript %}
   <script>
-    // var cancelMessage = document.getElementById('cancel-message')
     function cancelMessage(){
       document.getElementById('new-message-div').classList.add('hidden')
       document.getElementById('new-message-button').classList.remove('hidden')
     }
     document.getElementById('cancel-message').addEventListener('click', cancelMessage);
+
+    $('.reply-button').on('click',function(e){
+      e.preventDefault();
+      var that = $(this)
+      // that.attr('id').slice(13,that.attr('id').length)
+      that.parent().addClass('hidden')
+      console.log(that.parent().parent().append("<form class='reply-message' method='post'><div class='col-md-2'><input class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' name='submit'></form>"))
+    })
+
     $('#new-message-button').on('click',function(e){
       $('#new-message-div').removeClass('hidden');
       $('#new-message-button').addClass('hidden');
@@ -32,7 +40,7 @@
           },
           success : function(json) {
             document.getElementById('inbox-message-'+json.pk).remove()
-            document.getElementById('inbox-message-'+json.pk).remove()
+            document.getElementById('outbox-message-'+json.pk).remove()
           }
         })
       }
@@ -59,9 +67,9 @@
             $('#new-message-button').removeClass('hidden');
             if (json.recipient_id == json.sender_id) {
               $('.inbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p><p><a class='pm-delete' href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
-              $('.inbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p><p><a class='pm-delete' href='/messages/delete/"+json.message_pk+"/' title='delete' class='btn btn-simple'><span class='glyphicon glyphicon-remove text-danger'></span><span class='text-danger icon-label'>Delete</span></a></p></div>")
+              $('.outbox-messages').prepend("<div id='outbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='outbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent to: "+json.recipient+"</a></p></div>")
             } else {
-              $('.inbox-messages').prepend("<div id='inbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='inbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent by: "+json.username+"</a></p></div>")
+              $('.outbox-messages').prepend("<div id='outbox-message-"+json.message_pk+"'><h3 id='subject_line'>subject: <a class='outbox-msg-"+json.message_pk+"' href='/messages/details/"+json.message_pk+"/'>"+json.subject+"</a></h3><p>sent to: "+json.recipient+"</a></p></div>")
             }
           }
         })
@@ -96,8 +104,8 @@
     {% endfor %}
   </div>
   <h1>Sent Messages</h1>
-  <div class="inbox-messages">
-    {% for message in users_inbox  %}
+  <div class="outbox-messages">
+    {% for message in users_outbox  %}
       {% include "private_messages/_sent_message.html" %}
     {% endfor %}
   </div>
