@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
   <h3>Message: {{privatemessage.message}}</h3>
-  {% include "private_messages/_message.html" with message=privatemessage %}
+  {% include "private_messages/_outbox_message.html" with message=privatemessage %}
 {% endblock %}

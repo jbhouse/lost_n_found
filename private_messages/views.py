@@ -59,6 +59,7 @@ class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
 
 def DeletePrivateMessage(request, **kwargs):
     response_data = {}
+    response_data['pk'] = kwargs['pk']
     private_message = get_object_or_404(PrivateMessage, pk=kwargs['pk'])
     private_message.delete()
     return JsonResponse(response_data)
