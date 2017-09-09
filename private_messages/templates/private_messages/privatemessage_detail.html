@@ -2,8 +2,8 @@
 {% block content %}
   <h3>Message: {{privatemessage.message}}</h3>
   {% if privatemessage.recipient.username == request.user.username %}
-    {% include "private_messages/_inbox_message.html" with message=privatemessage %}
+    {% include "private_messages/_inbox_message.html" with message=privatemessage msgdetail="True" %}
   {% else %}
-    {% include "private_messages/_sent_message.html" with message=privatemessage %}
+    {% include "private_messages/_sent_message.html" with message=privatemessage msgdetail="True" %}
   {% endif %}
 {% endblock %}
