@@ -3,7 +3,8 @@
     <h3 class="subject_line">subject: {{message.subject}}</h3>
   {% else %}
     <h3 class="subject_line">subject: <a href="{% url 'private_messages:detail' pk=message.pk %}">{{message.subject}}</a></h3>
-  {% endif %}  <p id="sender-id-{{message.sender.pk}}">sender: {{message.sender.username}}</p>
+  {% endif %}
+  <p id="sender-id-{{message.sender.pk}}">sender: {{message.sender.username}}</p>
   {% if from == "home" %}
     <p id="inbox-options-{{message.pk}}">
       {% if message.sender.username != request.user.username and not hide_delete %}
@@ -26,15 +27,3 @@
     </p>
   {% endif %}
 </div>
-
-{% block partial_javascript %}
-  <script>
-    $('.reply-button').on('click',function(e){
-      e.preventDefault();
-      var that = $(this)
-      var replyButtonId = that.attr('id').slice(13,that.attr('id').length)
-      that.parent().addClass('hidden')
-      that.parent().parent().append("<form id='reply-form-"+replyButtonId+"' class='reply-message' method='post'><div class='col-md-2'><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' name='submit'></form>")
-    })
-  </script>
-{% endblock %}
