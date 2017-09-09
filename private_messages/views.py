@@ -52,7 +52,15 @@ class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMi
 
 class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
     model = PrivateMessage
+    # private_message = get_object_or_404(PrivateMessage, pk=kwargs['pk'])
+    # private_message.viewed = True
     select_related = ('sender','recipient')
+
+    def get_object(self):
+        object = super(PrivateMessageDetail, self).get_object()
+        object.viewed = True
+        object.save()
+        return object
 
     def query_set(self):
         queryset = super().get_queryset()
@@ -66,3 +74,8 @@ def DeletePrivateMessage(request, **kwargs):
         response_data['pk'] = kwargs['pk']
         return JsonResponse(response_data)
     return redirect('private_messages:list')
+
+def DeletePrivateMessageHome(request, **kwargs):
+    private_message = get_object_or_404(PrivateMessage, pk=kwargs['pk'])
+    private_message.delete()
+    return redirect('home')

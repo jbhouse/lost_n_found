@@ -14,6 +14,7 @@ class PrivateMessage(models.Model):
     subject = models.CharField(max_length=256,unique=False)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
+    viewed = models.BooleanField(default=False)
     objects = PrivateMessageManager()
 
     def __str__(self):
