@@ -1,6 +1,6 @@
 .nav-element {
   position: relative;
-  left: 61%;
+  left: -5.2%;
 }
 
 .login-form {
@@ -13,3 +13,7 @@
   right: 5.4%;
   bottom: 70px;
 }*/
+.messages{
+  position: relative;
+  left: 60.1%;
+}

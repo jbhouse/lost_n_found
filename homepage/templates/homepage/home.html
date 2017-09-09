@@ -6,10 +6,10 @@
     <title>Marker Clustering</title>
     <style>
       #map {
-        height: 95%;
+        height: 100%;
         width: 60%;
-        /*margin-top: -5.3%;
-        margin-left: .2%;*/
+        margin-top: -5.3%;
+        /*margin-left: .2%;*/
       }
       html, body {
         height: 98%;
@@ -41,27 +41,28 @@
       <div class="customnav">
           {% if user.is_authenticated %}
           <div>
-              <form id="createlostitem/" class="locator" method="post">
-                {% csrf_token %}
-                <input type="textarea" name="description" placeholder="description" value="">
-                <input id="latitude" type="text" name="latitude" placeholder="latitude" value="">
-                <input id="longitude" type="text" name="longitude" placeholder="longitude" value="">
-                <input type="submit" value="find a lost item">
-              </form>
+            <form id="createlostitem/" class="locator" method="post">
+              {% csrf_token %}
+              <input id="lost-item-description" type="textarea" name="description" placeholder="description" value="">
+              <input id="lost-item-address" type="text" name="address" placeholder="address" value="">
+              <input type="submit" value="report found item">
+            </form>
           </div>
           <div>
-              <form id="createfounditem/" class="locator" method="post">
-                {% csrf_token %}
-                <input type="textarea" name="description" placeholder="description" value="">
-                <input id="latitude" type="text" name="latitude" placeholder="latitude" value="">
-                <input id="longitude" type="text" name="longitude" placeholder="longitude" value="">
-                <input type="submit" value="report found item">
-              </form>
+            <form id="createfounditem/" class="locator" method="post">
+              {% csrf_token %}
+              <input id="found-item-description" type="textarea" name="description" placeholder="description" value="">
+              <input id="found-item-address" type="text" name="address" placeholder="address" value="">
+              <input type="submit" value="report found item">
+            </form>
           </div>
           {% else %}
           {% include "accounts/login.html" %}
           {% endif %}
       </div>
+    </div>
+    <div class="messages">
+      {% include "private_messages/privatemessage_list.html" %}
     </div>
     <div id="map"></div>
     <script>
@@ -141,39 +142,62 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw&callback=initMap">
     </script>
     <script>
+      // var geocodingAddress = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw'
       $('.locator').on('submit',function(e){
         e.preventDefault();
-        var that = $(this)
-        var data = that.serialize();
-        createLostItem();
-        function createLostItem() {
+        var that = $(this);
+        var data = that.children().serialize();
+        if (that.attr('id') == "createfounditem/") {
+          var itemDescription = $('#found-item-description').val()
+          var itemAddress = $('#found-item-address').val().split(" ").join("+")
+        } else {
+          var itemDescription = $('#lost-item-description').val()
+          var itemAddress = $('#lost-item-address').val().split(" ").join("+")
+        }
+        geocodeLocation();
+        function geocodeLocation() {
           $.ajax({
-            url  : that.attr('id'),
-            type : "POST",
-            data : data,
+            url : "https://maps.googleapis.com/maps/api/geocode/json?address="+itemAddress+"&key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw",
             success : function(json) {
-              that.find('input[name="description"]').val('')
-              that.find('input[name="latitude"]').val('')
-              that.find('input[name="longitude"]').val('')
-              var latitude = json['latitude']
-              var longitude = json['longitude']
-              var description = json['description']
-              var myLatlng = new google.maps.LatLng(latitude,longitude);
-              var mapOptions = {
-                zoom: 8,
-                center: myLatlng
-              }
-              var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+              var geoLocation = json.results[0].geometry.location
+              addToDatabase();
+              function addToDatabase() {
+                $.ajax({
+                  url  : that.attr('id'),
+                  type : "POST",
+                  beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                  },
+                  data : {
+                    description : itemDescription,
+                    latitude  : geoLocation.lat,
+                    longitude : geoLocation.lng
+                  },
+                  success : function(json) {
+                    that.find('input[name="description"]').val('')
+                    that.find('input[name="latitude"]').val('')
+                    that.find('input[name="longitude"]').val('')
+                    var latitude = json['latitude']
+                    var longitude = json['longitude']
+                    var description = json['description']
+                    var myLatlng = new google.maps.LatLng(latitude,longitude);
+                    var mapOptions = {
+                      zoom: 8,
+                      center: myLatlng
+                    }
+                    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-              var marker = new google.maps.Marker({
-                  position: myLatlng,
-                  title:"Hello World!"
-              });
-              marker.setMap(map);
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        title:"Hello World!"
+                    });
+                    marker.setMap(map);
+                  }
+                })
+              }
             }
           })
         }
-        // // var myLatLng = {lat: parseInt(latitude), lng: parseInt(longitude)}
       })
 
       $('.login-form').on('submit',function(e){
