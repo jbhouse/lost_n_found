@@ -1,106 +1,97 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Profile</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  </head>
-  <body>
-    <div class="">
-      <h1 id="user-greeting">hi {{user.username}}</h1>
-      <p>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'private_messages:list' %}">Message Box</a>
-      </p>
-      <h3>Feel free to delete any items that have been reunited with their owner</h3>
-    </div>
-    <div class="user-found-item-list">
-      <p><b>Items you've found</b></p>
-      {% for item in user_found_items %}
-        {% include "accounts/_item.html" with item=item name="founditem" %}
-      {% endfor %}
-    </div>
-    <div class="user-lost-item-list">
-      <p><b>Items you've lost</b></p>
-      {% for item in user_lost_items %}
-        {% include "accounts/_item.html" with item=item name="lostitem" %}
-      {% endfor %}
-    </div>
-    <div class="user-contact-info">
-      <h2>Edit your information</h2>
-      <form id="edit-user-info-{{user.id}}" method="post">
-        {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ profile_form.as_p }}
-        <button type="submit">Save changes</button>
-      </form>
-    </div>
+    {% extends "base.html" %}
+    {% block content %}
+      <div class="">
+        <h1 id="user-greeting">hi {{user.username}}</h1>
+        <h3>Feel free to delete any items that have been reunited with their owner</h3>
+      </div>
+      <div class="user-found-item-list">
+        <p><b>Items you've found</b></p>
+        {% for item in user_found_items %}
+          {% include "accounts/_item.html" with item=item name="founditem" %}
+        {% endfor %}
+      </div>
+      <div class="user-lost-item-list">
+        <p><b>Items you've lost</b></p>
+        {% for item in user_lost_items %}
+          {% include "accounts/_item.html" with item=item name="lostitem" %}
+        {% endfor %}
+      </div>
+      <div class="user-contact-info">
+        <h2>Edit your information</h2>
+        <form id="edit-user-info-{{user.id}}" method="post">
+          {% csrf_token %}
+          {{ user_form.as_p }}
+          {{ profile_form.as_p }}
+          <button type="submit">Save changes</button>
+        </form>
+      </div>
+    {% endblock %}
+    {% block javascript %}
     <script>
-    $('#edit-user-info-{{user.id}}').on('submit',function(e){
-      e.preventDefault();
-      var that = $(this)
-      var idLength = that.attr('id').length
-      var userName = document.getElementById("id_username").value;
-      var emailAddress = document.getElementById("id_email").value;
-      var phoneNumber = document.getElementById("id_phone_number").value;
-      var emailableOption = document.getElementById("id_emailable").checked;
-      var textableOption = document.getElementById("id_textable").checked;
-      updateUserInfo();
-      function updateUserInfo() {
-        $.ajax({
-          url  : '/accounts/profile/'+that.attr('id').slice((idLength-1),idLength)+"/",
-          type : "POST",
-          data : {
-            pk : that.attr('id').slice((idLength-1),idLength),
-            phoneNumber : phoneNumber,
-            emailableOption : emailableOption,
-            textableOption : textableOption,
-            userName : userName,
-            emailAddress : emailAddress
-          },
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-          },
-          success : function(json) {
-            document.getElementById("user-greeting").innerHTML = 'hi '+json['userName']
+      $('#edit-user-info-{{user.id}}').on('submit',function(e){
+        e.preventDefault();
+        var that = $(this)
+        var idLength = that.attr('id').length
+        var userName = document.getElementById("id_username").value;
+        var emailAddress = document.getElementById("id_email").value;
+        var phoneNumber = document.getElementById("id_phone_number").value;
+        var emailableOption = document.getElementById("id_emailable").checked;
+        var textableOption = document.getElementById("id_textable").checked;
+        updateUserInfo();
+        function updateUserInfo() {
+          $.ajax({
+            url  : '/accounts/profile/'+that.attr('id').slice((15),idLength)+"/",
+            type : "POST",
+            data : {
+              pk : that.attr('id').slice((idLength-1),idLength),
+              phoneNumber : phoneNumber,
+              emailableOption : emailableOption,
+              textableOption : textableOption,
+              userName : userName,
+              emailAddress : emailAddress
+            },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function(json) {
+              document.getElementById("user-greeting").innerHTML = 'hi '+json['userName']
+            }
+          })
+        }
+      })
+        $('.founditem').on('click',function(e){
+          e.preventDefault();
+          var that = $(this)
+          deleteFoundItem();
+          function deleteFoundItem() {
+            $.ajax({
+              url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
+              type : "DELETE",
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+              },
+              success : function(json) {
+                that.parent().detach()
+              }
+            })
           }
         })
-      }
-    })
-      $('.founditem').on('click',function(e){
-        e.preventDefault();
-        var that = $(this)
-        deleteFoundItem();
-        function deleteFoundItem() {
-          $.ajax({
-            url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
-            type : "DELETE",
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-            },
-            success : function(json) {
-              that.parent().detach()
-            }
-          })
-        }
-      })
-      $('.lostitem').on('click',function(e){
-        e.preventDefault();
-        var that = $(this)
-        deleteLostItem();
-        function deleteLostItem() {
-          $.ajax({
-            url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
-            type : "DELETE",
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-            },
-            success : function(json) {
-              that.parent().detach()
-            }
-          })
-        }
-      })
-    </script>
-  </body>
-</html>
+        $('.lostitem').on('click',function(e){
+          e.preventDefault();
+          var that = $(this)
+          deleteLostItem();
+          function deleteLostItem() {
+            $.ajax({
+              url  : "/accounts/delete/"+that.attr('class')+"/"+that.attr('id'),
+              type : "DELETE",
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+              },
+              success : function(json) {
+                that.parent().detach()
+              }
+            })
+          }
+        })
+      </script>
+    {% endblock %}

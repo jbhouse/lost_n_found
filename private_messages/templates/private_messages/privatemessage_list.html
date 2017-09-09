@@ -14,7 +14,6 @@
     $('.reply-button').on('click',function(e){
       e.preventDefault();
       var that = $(this)
-      // that.attr('id').slice(13,that.attr('id').length)
       that.parent().addClass('hidden')
       console.log(that.parent().parent().append("<form class='reply-message' method='post'><div class='col-md-2'><input class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' name='submit'></form>"))
     })
@@ -81,11 +80,7 @@
 {% block content %}
   <div class="new-message">
     <h1>Inbox</h1>
-    <p>
-      <a id="new-message-button" href="#">New Message</a>
-      |
-      <a href="{% url 'home' %}">Home</a>
-    </p>
+    <a id="new-message-button" href="#">New Message</a>
     <div id='new-message-div' class='hidden'>
       <h1>New Message</h1>
       <form method="post">
