@@ -34,6 +34,7 @@ class Home(generic.TemplateView):
         else:
             return redirect('home')
 
+
 @login_required
 def CreateLostItem(request, **kwargs):
     if request.method == "POST":
