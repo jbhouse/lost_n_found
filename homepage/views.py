@@ -6,12 +6,29 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from homepage.models import LostItem,FoundItem
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your views here.
 class Home(generic.TemplateView):
     template_name = "homepage/home.html"
 
     def get(self, request, *args, **kwargs):
+        if request.user.pk:
+            print('evaluate the queryset')
+            message_recipient = User.objects.prefetch_related('recipient').get(username__iexact=self.request.user.username)
+            lost_items = list(LostItem.objects.all())
+            lost_items_array = []
+            for idx,item in enumerate(lost_items):
+                hsh = {"description":item.description,"latitude":item.latitude,"longitude":item.longitude,"user_id":item.user.pk}
+                lost_items_array.append(hsh)
+            found_items = list(FoundItem.objects.all())
+            found_items_array = []
+            for idx,item in enumerate(found_items):
+                hsh = {"description":item.description,"latitude":item.latitude,"longitude":item.longitude,"user_id":item.user.pk}
+                found_items_array.append(hsh)
+            return self.render_to_response({'found_items_array': found_items_array, 'lost_items_array': lost_items_array, 'users_inbox': message_recipient.recipient.all().order_by('-created_at').filter(viewed=False)})
+        print('do not evaluate')
         lost_items = list(LostItem.objects.all())
         lost_items_array = []
         for idx,item in enumerate(lost_items):

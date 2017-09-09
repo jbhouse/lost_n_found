@@ -8,7 +8,7 @@
       #map {
         height: 100%;
         width: 60%;
-        margin-top: -5.3%;
+        /*margin-top: -5.3%;*/
         /*margin-left: .2%;*/
       }
       html, body {
@@ -61,10 +61,17 @@
           {% endif %}
       </div>
     </div>
-    <div class="messages">
-      {% include "private_messages/privatemessage_list.html" %}
-    </div>
     <div id="map"></div>
+    {% if user.is_authenticated %}
+      <div class="messages">
+        <div class="inbox-messages">
+          <h1>Unviewed Messages</h1>
+          {% for message in users_inbox  %}
+            {% include "private_messages/_inbox_message.html" with from="home" %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
     <script>
     var labels = [];
     var itemDescriptions = [];
