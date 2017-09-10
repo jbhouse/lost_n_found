@@ -1,0 +1,280 @@
+{% load static %}<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Marker Clustering</title>
+    <style>
+      #map {
+        height: 100%;
+        width: 70%;
+        /*margin-top: -5.3%;*/
+        /*margin-left: .2%;*/
+      }
+      html, body {
+        height: 98%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar mynav" role='navigation' id='navbar'>
+      <div class="container">
+        <ul class='nav navbar-nav navbar-right'>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'accounts:profile' pk=request.user.pk %}">Profile</a></li>
+            <li><a href="{% url 'private_messages:list' %}"class="btn btn-simple">Messages</a></li>
+            <li><a href="{% url 'accounts:logout' %}"class="btn btn-simple">Log Out</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <link rel="stylesheet" type="text/css" href="{% static 'homepage/style.css' %}" />
+    <div class="container">
+      <div class="customnav">
+          {% if user.is_authenticated %}
+            <div>
+              <form id="createlostitem/" class="locator" method="post">
+                {% csrf_token %}
+                <input id="lost-item-description" type="textarea" name="description" placeholder="description" value="">
+                <input id="lost-item-address" type="text" name="address" placeholder="address" value="">
+                <input type="submit" value="report found item">
+              </form>
+            </div>
+            <div>
+              <form id="createfounditem/" class="locator" method="post">
+                {% csrf_token %}
+                <input id="found-item-description" type="textarea" name="description" placeholder="description" value="">
+                <input id="found-item-address" type="text" name="address" placeholder="address" value="">
+                <input type="submit" value="report found item">
+              </form>
+            </div>
+          {% else %}
+          {% include "accounts/login.html" %}
+          {% endif %}
+      </div>
+    </div>
+    <div id="map"></div>
+    {% if user.is_authenticated %}
+      <div class="messages">
+        <div class="inbox-messages">
+          <h1>Unviewed Messages</h1>
+          {% for message in users_inbox  %}
+            {% include "private_messages/_inbox_message.html" with from="home" %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <script>
+    var labels = [];
+    var itemDescriptions = [];
+    var userIds = [];
+    var locations = [];
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: {lat: 42.174307, lng: -88.559105}
+        });
+
+        var markers = locations.map(function(location, i) {
+          return new google.maps.Marker({
+            position: location,
+            label: labels[i]
+          });
+        });
+        for (i in markers) {
+          attachSecretMessage(markers[i], itemDescriptions[i], userIds[i])
+        }
+
+        function attachSecretMessage(marker, itemDescription, userId) {
+          var userContact = "<a href='#' id='contact-user-"+userId+"'>contact</a><p>"+itemDescription+"</p>"
+          var infowindow = new google.maps.InfoWindow({
+            content: userContact
+          });
+
+          marker.addListener('click', function() {
+            infowindow.open(marker.get('map'), marker);
+          });
+        }
+
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      // if you value your sanity, avoid the lump of regex slicing presented below.
+      // just accept that it works.
+      var lostItems = "{{ lost_items_array|safe }}"
+      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
+      // this splits the string every 4th comma, since we have 4 pieces of info per hash
+      var foundItems = "{{ found_items_array|safe }}"
+      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
+      for (var i=0; i<foundItemsArray.length; i++) {
+        if (i == 0) {
+          foundItemsArray[i] = foundItemsArray[i].slice(1,foundItemsArray[i].length)
+        } else if (i == (foundItemsArray.length-1)) {
+          foundItemsArray[i] = foundItemsArray[i].slice(0,-1)
+        }
+        foundItemsArray[i] = foundItemsArray[i].match(/[^,]+/g);
+      }
+      for (var i=0; i<lostItemsArray.length; i++) {
+        if (i == 0) {
+          lostItemsArray[i] = lostItemsArray[i].slice(1,lostItemsArray[i].length)
+        } else if (i == (lostItemsArray.length-1)) {
+          lostItemsArray[i] = lostItemsArray[i].slice(0,-1)
+        }
+        lostItemsArray[i] = lostItemsArray[i].match(/[^,]+/g);
+      }
+      for (var i=0; i<lostItemsArray.length; i++) {
+        locations.push({lat: parseFloat(lostItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(lostItemsArray[i][2].match(/[^:]+/g)[1])})
+        labels.push('lost')
+        itemDescriptions.push(lostItemsArray[i][0].match(/[^:]+/g)[1])
+        userIds.push(lostItemsArray[i][3].match(/[^:]+/g)[1].slice(1,-1))
+      }
+      for (var i=0; i<foundItemsArray.length; i++) {
+        locations.push({lat: parseFloat(foundItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(foundItemsArray[i][2].match(/[^:]+/g)[1])})
+        labels.push('found')
+        itemDescriptions.push(foundItemsArray[i][0].match(/[^:]+/g)[1])
+        userIds.push(foundItemsArray[i][3].match(/[^:]+/g)[1].slice(1,-1))
+      }
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw&callback=initMap">
+    </script>
+    <script>
+      // var geocodingAddress = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw'
+      $('.locator').on('submit',function(e){
+        e.preventDefault();
+        var that = $(this);
+        var data = that.children().serialize();
+        if (that.attr('id') == "createfounditem/") {
+          var itemDescription = $('#found-item-description').val()
+          var itemAddress = $('#found-item-address').val().split(" ").join("+")
+        } else {
+          var itemDescription = $('#lost-item-description').val()
+          var itemAddress = $('#lost-item-address').val().split(" ").join("+")
+        }
+        geocodeLocation();
+        function geocodeLocation() {
+          $.ajax({
+            url : "https://maps.googleapis.com/maps/api/geocode/json?address="+itemAddress+"&key=AIzaSyBcuqDYt5X1kbAHj0MbEOPvZTDaLXnw7Uw",
+            success : function(json) {
+              var geoLocation = json.results[0].geometry.location
+              addToDatabase();
+              function addToDatabase() {
+                $.ajax({
+                  url  : that.attr('id'),
+                  type : "POST",
+                  beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                  },
+                  data : {
+                    description : itemDescription,
+                    latitude  : geoLocation.lat,
+                    longitude : geoLocation.lng
+                  },
+                  success : function(json) {
+                    that.find('input[name="description"]').val('')
+                    that.find('input[name="latitude"]').val('')
+                    that.find('input[name="longitude"]').val('')
+                    var latitude = json['latitude']
+                    var longitude = json['longitude']
+                    var description = json['description']
+                    var myLatlng = new google.maps.LatLng(latitude,longitude);
+                    var mapOptions = {
+                      zoom: 8,
+                      center: myLatlng
+                    }
+                    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        title:"Hello World!"
+                    });
+                    marker.setMap(map);
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
+
+      $('.login-form').on('submit',function(e){
+        e.preventDefault();
+        var that = $(this)
+        login()
+        function login() {
+          $.ajax({
+            url  : 'accounts/'+that.attr('action'),
+            type : "POST",
+            success: function() {
+            }
+          })
+        }
+      })
+      $('.reply-button').on('click',function(e){
+        e.preventDefault();
+        var that = $(this)
+        console.log(that);
+        var replyButtonId = that.attr('id').slice(13,that.attr('id').length)
+        that.parent().addClass('hidden')
+        that.parent().parent().append("<form id='reply-form-"+replyButtonId+"' class='reply-message' method='post'><div class='col-md-2'><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' name='submit'></form>")
+      })
+      $('.inbox-messages').on('submit', 'form', function(e) {
+        e.preventDefault();
+        var that = $(this)
+        var msgId = that.attr('id').slice(11,that.attr('id').length)
+        var subject = document.getElementById('reply-subject-'+msgId).value;
+        var message = document.getElementById('reply-message-'+msgId).value;
+        var senderId = that.prev().prev().attr('id').slice(10,that.prev().prev().attr('id').length)
+        sendReply();
+        function sendReply() {
+          $.ajax({
+            url  : '{% url 'private_messages:new_message' %}',
+            type : "POST",
+            data : {
+              recipient : senderId,
+              subject : subject,
+              message : message
+            },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function() {
+              document.getElementById('reply-form-'+msgId).classList.add('hidden');
+              document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
+            }
+          })
+        }
+      })
+      $('.inbox-messages').on('click','a',function(e){
+        that = $(this)
+        if (that.attr('class') == "pm-delete") {
+          e.preventDefault();
+          delete_message();
+        }
+
+        function delete_message(){
+          $.ajax({
+            url  : that.attr('href').slice(0,16)+that.attr('href').slice(20,that.attr('href').length - 1),
+            type : "DELETE",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function(json) {
+              document.getElementById('inbox-message-'+json.pk).remove()
+            }
+          })
+        }
+      })
+    </script>
+  </body>
+</html>

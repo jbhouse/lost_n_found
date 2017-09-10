@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+  <div class='new-message-form'>
+    <h1>New Message</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% bootstrap_form message_form %}
+      <input type='submit' class='btn btn-primary' value='Send Message'>
+    </form>
+  </div>
+  {% endblock %}
