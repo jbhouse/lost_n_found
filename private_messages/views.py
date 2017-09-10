@@ -52,6 +52,7 @@ class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMi
 
 class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
     model = PrivateMessage
+
     select_related = ('sender','recipient')
 
     def get_object(self):

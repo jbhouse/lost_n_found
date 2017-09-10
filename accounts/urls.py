@@ -10,6 +10,7 @@ urlpatterns = [
     url(r"signup/$", views.SignUp.as_view(), name="signup"),
     url(r'^ajax/validate_username/$', views.validate_username, name='validate_username'),
     url(r'^profile/(?P<pk>\d+)/$', views.view_profile, name='profile'),
+    url(r'^email/$', views.send_email, name='email'),
     url(r'^delete/founditem/(?P<pk>\d+)/$', views.DeleteFoundItem, name='found_delete'),
     url(r'^delete/lostitem/(?P<pk>\d+)/$', views.DeleteLostItem, name='lost_delete'),
 ]

@@ -12,8 +12,30 @@ from homepage.models import FoundItem,LostItem
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserForm,ProfileForm
-
 from . import forms
+from django.core.mail import send_mail, BadHeaderError
+from django.http import HttpResponse, HttpResponseRedirect
+
+def send_email(request):
+    subject = request.POST.get('subject', '')
+    message = request.POST.get('message', '')
+    from_email = request.POST.get('from_email', '')
+    print('/'*88)
+    print(subject)
+    print(message)
+    print(from_email)
+    print(request.POST.get('to_email', ''))
+    print('/'*88)
+    # if subject and message and from_email:
+    #     try:
+    #         send_mail(subject, message, from_email, ['admin@example.com'])
+    #     except BadHeaderError:
+    #         return HttpResponse('Invalid header found.')
+    #     return HttpResponseRedirect('/contact/thanks/')
+    # else:
+    #     # In reality we'd use a form class
+    #     # to get proper validation errors.
+    #     return HttpResponse('Make sure all fields are entered and valid.')
 
 def validate_username(request):
     username = request.GET.get('username', None)
