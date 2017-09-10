@@ -23,6 +23,7 @@ def send_email(request):
     print('/'*88)
     print(subject)
     print(message)
+    print('/'*88)
     print(from_email)
     print(request.POST.get('to_email', ''))
     print('/'*88)

@@ -57,11 +57,25 @@
       } else if (that.attr('class') == 'email-message') {
         var subject = document.getElementById('email-subject-'+msgId).value;
         var message = document.getElementById('email-message-'+msgId).value;
-        console.log(that);
-        console.log(subject);
-        console.log(message);
-        console.log(senderId);
-        console.log(msgId);
+        // sendEmail();
+        // function sendEmail() {
+        //   $.ajax({
+        //     url  : '{% url 'accounts:email' %}',
+        //     type : "POST",
+        //     data : {
+        //       recipient : senderId,
+        //       subject : subject,
+        //       message : message
+        //     },
+        //     beforeSend: function (xhr) {
+        //       xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+        //     },
+        //     success : function() {
+        //       document.getElementById('email-form-'+msgId).classList.add('hidden');
+        //       document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
+        //     }
+        //   })
+        // }
       }
     })
 

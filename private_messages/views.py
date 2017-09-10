@@ -14,6 +14,7 @@ from django.http import Http404,JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
+
 def CreatePrivateMessage(request):
     if request.method == "POST":
         response_data = {}
