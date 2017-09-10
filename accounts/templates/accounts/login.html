@@ -1,0 +1,11 @@
+{% load bootstrap3 %}
+<div class="nav-element">
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" value="" placeholder="username">
+        <input type="password" name="password" value="" placeholder="password">
+        <input type="submit" value="Login" class="btn btn-default">
+        or
+        <button type="button" name="button"><a href="{% url 'accounts:signup' %}">Sign Up</a></button>
+    </form>
+</div>

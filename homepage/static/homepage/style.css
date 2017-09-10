@@ -1,4 +1,20 @@
-#navbar {
+.nav-element {
+  position: relative;
+  left: -5.2%;
+}
 
-  color: red;
+.login-form {
+  position: relative;
+  left: 60%;
+}
+
+/*.customnav {
+  position: relative;
+  right: 5.4%;
+  bottom: 70px;
+}*/
+.messages{
+  position: relative;
+  top: -700px;
+  left: 70.1%;
 }
