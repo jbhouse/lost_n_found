@@ -45,7 +45,7 @@
                 {% csrf_token %}
                 <input id="lost-item-description" type="textarea" name="description" placeholder="description" value="">
                 <input id="lost-item-address" type="text" name="address" placeholder="address" value="">
-                <input type="submit" value="report found item">
+                <input type="submit" value="report lost item">
               </form>
             </div>
             <div>
@@ -76,6 +76,7 @@
     var labels = [];
     var itemDescriptions = [];
     var userIds = [];
+    var emailableStatuses = [];
     var locations = [];
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -90,15 +91,21 @@
           });
         });
         for (i in markers) {
-          attachSecretMessage(markers[i], itemDescriptions[i], userIds[i])
+          attachSecretMessage(markers[i], itemDescriptions[i], userIds[i], emailableStatuses[i])
         }
 
-        function attachSecretMessage(marker, itemDescription, userId) {
-          var userContact = "<a href='#' id='contact-user-"+userId+"'>contact</a><p>"+itemDescription+"</p>"
-          var infowindow = new google.maps.InfoWindow({
-            content: userContact
-          });
-
+        function attachSecretMessage(marker, itemDescription, userId, emailableStatus) {
+          if (emailableStatus == 'True') {
+            var userContact = "<button id='reply-button-"+userId+"' class='reply-button btn btn-primary' type='button' name='button'>Message</button><button id='email-button-"+userId+"' class='email-button btn btn-primary' type='button' name='button'>Email</button><h3>"+itemDescription+"</h3>"
+            var infowindow = new google.maps.InfoWindow({
+              content: userContact
+            });
+          } else {
+            var userContact = "<button id='reply-button-"+userId+"' class='reply-button btn btn-primary' type='button' name='button'>Message</button><h3>"+itemDescription+"</h3>"
+            var infowindow = new google.maps.InfoWindow({
+              content: userContact
+            });
+          }
           marker.addListener('click', function() {
             infowindow.open(marker.get('map'), marker);
           });
@@ -110,10 +117,10 @@
       // if you value your sanity, avoid the lump of regex slicing presented below.
       // just accept that it works.
       var lostItems = "{{ lost_items_array|safe }}"
-      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
-      // this splits the string every 4th comma, since we have 4 pieces of info per hash
+      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
+      // this splits the string every 4th comma, since we have 5 pieces of info per hash
       var foundItems = "{{ found_items_array|safe }}"
-      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+/g);
+      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
       for (var i=0; i<foundItemsArray.length; i++) {
         if (i == 0) {
           foundItemsArray[i] = foundItemsArray[i].slice(1,foundItemsArray[i].length)
@@ -135,12 +142,20 @@
         labels.push('lost')
         itemDescriptions.push(lostItemsArray[i][0].match(/[^:]+/g)[1])
         userIds.push(lostItemsArray[i][3].match(/[^:]+/g)[1].slice(1,-1))
+        emailableStatuses.push(lostItemsArray[i][4].match(/[^:]+/g)[1].slice(1,-1))
       }
       for (var i=0; i<foundItemsArray.length; i++) {
         locations.push({lat: parseFloat(foundItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(foundItemsArray[i][2].match(/[^:]+/g)[1])})
         labels.push('found')
         itemDescriptions.push(foundItemsArray[i][0].match(/[^:]+/g)[1])
         userIds.push(foundItemsArray[i][3].match(/[^:]+/g)[1].slice(1,-1))
+        emailableStatuses.push(foundItemsArray[i][4].match(/[^:]+/g)[1].slice(1,-1))
+        // to add a "text them" option we change
+        // var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
+        // to
+        // var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
+        // textableStatuses.push(foundItemsArray[i][5].match(/[^:]+/g)[1].slice(1,-1))
+        // and add a textableStatuses array
       }
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
