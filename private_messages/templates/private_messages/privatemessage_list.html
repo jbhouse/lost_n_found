@@ -31,7 +31,7 @@
       e.preventDefault();
       var that = $(this)
       var msgId = that.attr('id').slice(11,that.attr('id').length)
-      var senderId = that.prev().prev().attr('id').slice(10,that.prev().prev().attr('id').length)
+      var recipientId = that.prev().prev().attr('id').slice(10,that.prev().prev().attr('id').length)
       if (that.attr('class') == 'reply-message'){
         var subject = document.getElementById('reply-subject-'+msgId).value;
         var message = document.getElementById('reply-message-'+msgId).value;
@@ -41,7 +41,7 @@
             url  : '{% url 'private_messages:new_message' %}',
             type : "POST",
             data : {
-              recipient : senderId,
+              recipient : recipientId,
               subject : subject,
               message : message
             },
@@ -57,25 +57,25 @@
       } else if (that.attr('class') == 'email-message') {
         var subject = document.getElementById('email-subject-'+msgId).value;
         var message = document.getElementById('email-message-'+msgId).value;
-        // sendEmail();
-        // function sendEmail() {
-        //   $.ajax({
-        //     url  : '{% url 'accounts:email' %}',
-        //     type : "POST",
-        //     data : {
-        //       recipient : senderId,
-        //       subject : subject,
-        //       message : message
-        //     },
-        //     beforeSend: function (xhr) {
-        //       xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-        //     },
-        //     success : function() {
-        //       document.getElementById('email-form-'+msgId).classList.add('hidden');
-        //       document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
-        //     }
-        //   })
-        // }
+        sendEmail();
+        function sendEmail() {
+          $.ajax({
+            url  : '{% url 'accounts:email' %}',
+            type : "POST",
+            data : {
+              recipient : recipientId,
+              subject : subject,
+              message : message
+            },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function() {
+              document.getElementById('email-form-'+msgId).classList.add('hidden');
+              document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
+            }
+          })
+        }
       }
     })
 
