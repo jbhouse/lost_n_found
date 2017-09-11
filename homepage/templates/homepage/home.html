@@ -331,9 +331,8 @@
               xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
             },
             success : function() {
-              console.log('yay ajax!');
-              // document.getElementById('reply-form-'+msgId).classList.add('hidden');
-              // document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
+              document.getElementById('reply-form-'+recipientId).classList.add('hidden');
+              $('.reply-buttons').removeClass('hidden')
             }
           })
         }
