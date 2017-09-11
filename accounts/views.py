@@ -19,7 +19,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 def send_email(request):
     subject = request.POST.get('subject', '')
     message = request.POST.get('message', '')
-    from_email = request.POST.get('from_email', '')
+    from_email = request.POST.get('senderId', '')
     print('/'*88)
     print(subject)
     print(message)
