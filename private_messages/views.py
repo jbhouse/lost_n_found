@@ -14,6 +14,7 @@ from django.http import Http404,JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
+
 def CreatePrivateMessage(request):
     if request.method == "POST":
         response_data = {}
@@ -52,8 +53,7 @@ class PrivateMessageList(generic.TemplateView,SelectRelatedMixin,LoginRequiredMi
 
 class PrivateMessageDetail(SelectRelatedMixin,generic.DetailView):
     model = PrivateMessage
-    # private_message = get_object_or_404(PrivateMessage, pk=kwargs['pk'])
-    # private_message.viewed = True
+
     select_related = ('sender','recipient')
 
     def get_object(self):
