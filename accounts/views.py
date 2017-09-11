@@ -19,24 +19,17 @@ from django.http import HttpResponse, HttpResponseRedirect
 def send_email(request):
     subject = request.POST.get('subject', '')
     message = request.POST.get('message', '')
-    from_email = request.POST.get('senderId', '')
-    print('/'*88)
-    print(subject)
-    print(message)
-    print('/'*88)
-    print(from_email)
-    print(request.POST.get('to_email', ''))
-    print('/'*88)
-    # if subject and message and from_email:
-    #     try:
-    #         send_mail(subject, message, from_email, ['admin@example.com'])
-    #     except BadHeaderError:
-    #         return HttpResponse('Invalid header found.')
-    #     return HttpResponseRedirect('/contact/thanks/')
-    # else:
-    #     # In reality we'd use a form class
-    #     # to get proper validation errors.
-    #     return HttpResponse('Make sure all fields are entered and valid.')
+    from_email = request.POST.get('recipient', '')
+    recipient_user = get_object_or_404(User, pk=from_email)
+    sending_user = get_object_or_404(User, pk=from_email)
+    if subject and message and from_email:
+        try:
+            send_mail(subject, message, sending_user.email, [recipient_user.email])
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+        return HttpResponseRedirect('/contact/thanks/')
+    else:
+        return HttpResponse('Make sure all fields are entered and valid.')
 
 def validate_username(request):
     username = request.GET.get('username', None)
