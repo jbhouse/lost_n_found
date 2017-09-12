@@ -38,7 +38,7 @@
         var emailableOption = document.getElementById("id_emailable").checked;
         var textableOption = document.getElementById("id_textable").checked;
         if(textableOption == true) {
-          if (phoneNumber.length < 10) {
+          if (phoneNumber.length < 11) {
             alert('If you want to be able to recieve text messages you must enter a valid phone number')
           } else {
             updateUserInfo();
