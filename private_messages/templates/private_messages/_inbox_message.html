@@ -1,5 +1,4 @@
 <div id="inbox-message-{{message.pk}}">
-
   {% if msgdetail == "True" %}
     <h3 class="subject_line">subject: {{message.subject}}</h3>
   {% else %}
@@ -7,50 +6,74 @@
   {% endif %}
   <p id="sender-id-{{message.sender.pk}}">sender: {{message.sender.username}}</p>
   {% if message.sender.profile.emailable == False %}
+
     {% if from == "home" %}
+
+      <p>so this right here. this code</p>
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id='reply-button-{{message.pk}}' class='reply-button btn btn-primary' type='button' name='button'>Reply</button>
+          {% if message.sender.profile.textable == True %}
+            <button id="text-button-{{message.pk}}" class="text-button btn btn-primary" type="button" name="button">Text</button>
+          {% endif %}
           <a class='pm-delete' href="{% url 'private_messages:deletehome' pk=message.pk %}" title="delete" class="btn btn-simple">
             <span class="glyphicon glyphicon-remove text-danger"></span>
             <span class="text-danger icon-label">Delete</span>
           </a>
         {% endif %}
       </p>
+
     {% else %}
+
+      <p>so this right here. this code</p>
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
+          {% if message.sender.profile.textable == True %}
+            <button id="text-button-{{message.pk}}" class="text-button btn btn-primary" type="button" name="button">Text</button>
+          {% endif %}
           <a class='pm-delete' href="{% url 'private_messages:delete' pk=message.pk %}" title="delete" class="btn btn-simple">
             <span class="glyphicon glyphicon-remove text-danger"></span>
             <span class="text-danger icon-label">Delete</span>
           </a>
         {% endif %}
       </p>
+
     {% endif %}
+
   {% else %}
+
     {% if from == "home" %}
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
           <button id="email-button-{{message.pk}}" class="email-button btn btn-primary" type="button" name="button">Email</button>
+          {% if message.sender.profile.textable == True %}
+            <button id="text-button-{{message.pk}}" class="text-button btn btn-primary" type="button" name="button">Text</button>
+          {% endif %}
           <a class='pm-delete' href="{% url 'private_messages:deletehome' pk=message.pk %}" title="delete" class="btn btn-simple">
             <span class="glyphicon glyphicon-remove text-danger"></span>
             <span class="text-danger icon-label">Delete</span>
           </a>
         {% endif %}
       </p>
+
     {% else %}
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
           <button id="email-button-{{message.pk}}" class="email-button btn btn-primary" type="button" name="button">Email</button>
+          {% if message.sender.profile.textable == True %}
+            <button id="text-button-{{message.pk}}" class="text-button btn btn-primary" type="button" name="button">Text</button>
+          {% endif %}
           <a class='pm-delete' href="{% url 'private_messages:delete' pk=message.pk %}" title="delete" class="btn btn-simple">
             <span class="glyphicon glyphicon-remove text-danger"></span>
             <span class="text-danger icon-label">Delete</span>
           </a>
         {% endif %}
       </p>
+
     {% endif %}
+
   {% endif %}
 </div>

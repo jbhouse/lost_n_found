@@ -13,6 +13,24 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404,JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+# from twilio.rest import Client
+#
+# account_sid = TwilioId
+# auth_token = TwilioToken
+# client = Client(account_sid, auth_token)
+#
+# message = client.messages.create(
+#         "+15558675309",
+#         body="Jenny please?! I love you <3",
+#         from_="+14158141829",
+#         # media_url="http://www.example.com/hearts.png")
+#
+# print(message.sid)
+
+def CreateText(request):
+    print('/'*88)
+    print('you sent a text')
+    print('/'*88)
 
 
 def CreatePrivateMessage(request):
