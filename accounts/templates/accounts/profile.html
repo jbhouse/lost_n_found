@@ -37,7 +37,15 @@
         var phoneNumber = document.getElementById("id_phone_number").value;
         var emailableOption = document.getElementById("id_emailable").checked;
         var textableOption = document.getElementById("id_textable").checked;
-        updateUserInfo();
+        if(textableOption == true) {
+          if (phoneNumber.length < 10) {
+            alert('If you want to be able to recieve text messages you must enter a valid phone number')
+          } else {
+            updateUserInfo();
+          }
+        } else {
+          updateUserInfo();
+        }
         function updateUserInfo() {
           $.ajax({
             url  : '/accounts/profile/'+that.attr('id').slice((15),idLength)+"/",
