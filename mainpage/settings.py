@@ -21,6 +21,8 @@ TEMPLATES_DIR = os.path.join(BASE_DIR,'templates')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('LOSTSECRETKEY', 'my-default-secret-key')
+TwilioToken = os.environ.get('TwilioToken', 'something')
+TwilioId = os.environ.get('TwilioId', 'something-else')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

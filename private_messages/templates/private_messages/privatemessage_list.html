@@ -30,9 +30,9 @@
     $('.inbox-messages').on('submit', 'form', function(e) {
       e.preventDefault();
       var that = $(this)
-      var msgId = that.attr('id').slice(11,that.attr('id').length)
       var recipientId = that.prev().prev().attr('id').slice(10,that.prev().prev().attr('id').length)
       if (that.attr('class') == 'reply-message'){
+        var msgId = that.attr('id').slice(11,that.attr('id').length)
         var subject = document.getElementById('reply-subject-'+msgId).value;
         var message = document.getElementById('reply-message-'+msgId).value;
         sendReply();
@@ -55,8 +55,10 @@
           })
         }
       } else if (that.attr('class') == 'email-message') {
+        console.log(msgId);
         var subject = document.getElementById('email-subject-'+msgId).value;
         var message = document.getElementById('email-message-'+msgId).value;
+        var msgId = that.attr('id').slice(11,that.attr('id').length)
         sendEmail();
         function sendEmail() {
           $.ajax({
@@ -72,6 +74,26 @@
             },
             success : function() {
               document.getElementById('email-form-'+msgId).classList.add('hidden');
+              document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
+            }
+          })
+        }
+      } else if (that.attr('class') == 'text-message') {
+        var msgId = that.attr('id').slice(10,that.attr('id').length)
+        var message = document.getElementById('text-message-'+msgId).value;
+        sendText();
+        function sendText() {
+          $.ajax({
+            url  : '{% url 'private_messages:text' %}',
+            type : "POST",
+            data : {
+              message : message
+            },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success : function() {
+              document.getElementById('text-form-'+msgId).classList.add('hidden');
               document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
             }
           })
@@ -134,6 +156,15 @@
           }
         })
       }
+    })
+
+    $('.text-button').on('click', function(e){
+      e.preventDefault();
+      var that = $(this)
+      var textId = that.attr('id').slice(12,that.attr('id').length)
+      var contactList = document.getElementById('inbox-options-'+textId)
+      contactList.classList.add('hidden')
+      that.parent().parent().append("<form id='text-form-"+textId+"' class='text-message' method='post'><div class='form-group'><textarea id='text-message-"+textId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='send text' name='submit'></form>")
     })
   </script>
 {% endblock %}
