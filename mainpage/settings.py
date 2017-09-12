@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_twilio',
     'private_messages',
     'bootstrap3',
     'accounts',

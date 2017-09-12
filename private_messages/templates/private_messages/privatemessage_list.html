@@ -55,7 +55,6 @@
           })
         }
       } else if (that.attr('class') == 'email-message') {
-        console.log(msgId);
         var subject = document.getElementById('email-subject-'+msgId).value;
         var message = document.getElementById('email-message-'+msgId).value;
         var msgId = that.attr('id').slice(11,that.attr('id').length)
@@ -87,6 +86,7 @@
             url  : '{% url 'private_messages:text' %}',
             type : "POST",
             data : {
+              recipient : recipientId,
               message : message
             },
             beforeSend: function (xhr) {

@@ -13,8 +13,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404,JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-# from twilio.rest import Client
-#
+from twilio.rest import Client
+from mainpage.settings import TwilioId,TwilioToken
+
 # account_sid = TwilioId
 # auth_token = TwilioToken
 # client = Client(account_sid, auth_token)
@@ -28,9 +29,28 @@ from django.contrib import messages
 # print(message.sid)
 
 def CreateText(request):
-    print('/'*88)
-    print('you sent a text')
-    print('/'*88)
+    if request.method == "POST":
+        response_data = {}
+        # print('/'*88)
+        # print(TwilioId)
+        # print('/'*88)
+        # print(TwilioToken)
+        # print('/'*88)
+        if request.user.is_authenticated():
+            sender = request.user
+        message = request.POST.get('message')
+        recipient_id = request.POST.get('recipient')
+        recipient = get_object_or_404(User, pk=recipient_id)
+        account_sid = TwilioId
+        auth_token = TwilioToken
+        recipient_phone_number = recipient.profile.phone_number
+        sender_phone_number = sender.profile.phone_number
+        client = Client(account_sid, auth_token)
+        message = client.messages.create(
+                "+"+recipient_phone_number,
+                body=message,
+                from_="+"+sender_phone_number)
+        return JsonResponse(response_data)
 
 
 def CreatePrivateMessage(request):
