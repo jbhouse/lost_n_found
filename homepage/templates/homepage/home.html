@@ -73,6 +73,7 @@
       </div>
     {% endif %}
     <script>
+    var textableStatuses = [];
     var labels = [];
     var itemDescriptions = [];
     var userIds = [];
@@ -95,7 +96,7 @@
         }
         // return here
         function attachSecretMessage(marker, itemDescription, currentUserId, emailableStatus) {
-          if (emailableStatus == 'True') {
+          if (emailableStatus == ' True') {
             var userContact = "<div class='reply-buttons'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
               content: userContact
@@ -118,10 +119,10 @@
       // if you value your sanity, avoid the lump of regex slicing presented below.
       // just accept that it works.
       var lostItems = "{{ lost_items_array|safe }}"
-      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
+      var lostItemsArray = lostItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
       // this splits the string every 4th comma, since we have 5 pieces of info per hash
       var foundItems = "{{ found_items_array|safe }}"
-      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
+      var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
       for (var i=0; i<foundItemsArray.length; i++) {
         if (i == 0) {
           foundItemsArray[i] = foundItemsArray[i].slice(1,foundItemsArray[i].length)
@@ -143,20 +144,16 @@
         labels.push('lost')
         itemDescriptions.push(lostItemsArray[i][0].match(/[^:]+/g)[1])
         userIds.push(lostItemsArray[i][3].match(/[^:]+/g)[1].slice(1,lostItemsArray[i][3].match(/[^:]+/g)[1].length))
-        emailableStatuses.push(lostItemsArray[i][4].match(/[^:]+/g)[1].slice(1,-1))
+        emailableStatuses.push(lostItemsArray[i][4].match(/[^:]+/g)[1])
+        textableStatuses.push(foundItemsArray[i][5].match(/[^:]+/g)[1].slice(1,-1))
       }
       for (var i=0; i<foundItemsArray.length; i++) {
         locations.push({lat: parseFloat(foundItemsArray[i][1].match(/[^:]+/g)[1]), lng: parseFloat(foundItemsArray[i][2].match(/[^:]+/g)[1])})
         labels.push('found')
         itemDescriptions.push(foundItemsArray[i][0].match(/[^:]+/g)[1])
         userIds.push(foundItemsArray[i][3].match(/[^:]+/g)[1].slice(1,foundItemsArray[i][3].match(/[^:]+/g)[1].length))
-        emailableStatuses.push(foundItemsArray[i][4].match(/[^:]+/g)[1].slice(1,-1))
-        // to add a "text them" option we change
-        // var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
-        // to
-        // var foundItemsArray = foundItems.match(/[^,]+,[^,]+,[^,]+,[^,]+,[^,]+,[^,]+/g);
-        // textableStatuses.push(foundItemsArray[i][5].match(/[^:]+/g)[1].slice(1,-1))
-        // and add a textableStatuses array
+        emailableStatuses.push(foundItemsArray[i][4].match(/[^:]+/g)[1])
+        textableStatuses.push(foundItemsArray[i][5].match(/[^:]+/g)[1].slice(1,-1))
       }
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
@@ -236,60 +233,7 @@
           })
         }
       })
-      $('.reply-button').on('click',function(e){
-        e.preventDefault();
-        var that = $(this)
-        var replyButtonId = that.attr('id').slice(13,that.attr('id').length)
-        that.parent().addClass('hidden')
-        that.parent().parent().append("<form id='reply-form-"+replyButtonId+"' class='reply-message' method='post'><div><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' name='submit'></form>")
-      })
-      $('.inbox-messages').on('submit', 'form', function(e) {
-        e.preventDefault();
-        var that = $(this)
-        var msgId = that.attr('id').slice(11,that.attr('id').length)
-        var subject = document.getElementById('reply-subject-'+msgId).value;
-        var message = document.getElementById('reply-message-'+msgId).value;
-        var senderId = that.prev().prev().attr('id').slice(10,that.prev().prev().attr('id').length)
-        sendReply();
-        function sendReply() {
-          $.ajax({
-            url  : '{% url 'private_messages:new_message' %}',
-            type : "POST",
-            data : {
-              recipient : senderId,
-              subject : subject,
-              message : message
-            },
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-            },
-            success : function() {
-              document.getElementById('reply-form-'+msgId).classList.add('hidden');
-              document.getElementById('inbox-options-'+msgId).classList.remove('hidden')
-            }
-          })
-        }
-      })
-      $('.inbox-messages').on('click','a',function(e){
-        that = $(this)
-        if (that.attr('class') == "pm-delete") {
-          e.preventDefault();
-          delete_message();
-        }
 
-        function delete_message(){
-          $.ajax({
-            url  : that.attr('href').slice(0,16)+that.attr('href').slice(20,that.attr('href').length - 1),
-            type : "DELETE",
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-            },
-            success : function(json) {
-              document.getElementById('inbox-message-'+json.pk).remove()
-            }
-          })
-        }
-      })
       $(document).on('click','div.map-reply-button',function(e){
         e.preventDefault();
         var that = $(this)
@@ -297,20 +241,22 @@
         that.parent().addClass('hidden')
         that.parent().siblings().prepend("<form id='reply-form-"+replyButtonId+"' class='reply-message' method='post'><div><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='message' name='submit'><button class='cancelmessage'>cancel</button></form>")
       })
+
       $(document).on('click','div.map-email-button',function(e){
         e.preventDefault();
         var that = $(this)
         var emailButtonId = that.attr('id').slice(10,that.attr('id').length)
-        console.log(that.parent());
         that.parent().addClass('hidden')
         that.parent().siblings().prepend(("<form id='email-form-"+emailButtonId+"' class='email-message' method='post'><div><input id='email-subject-"+emailButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='email-message-"+emailButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='email' name='submit'><button class='cancelmessage'>cancel</button></form>"))
       })
+
       $(document).on('click', ":button.cancelmessage", function(e){
         e.preventDefault();
         var that = $(this)
         that.parent().addClass('hidden')
         $('div.reply-buttons').removeClass('hidden')
       })
+
       $(document).on('submit', 'form.reply-message', function(e){
         e.preventDefault();
         var that = $(this)
@@ -338,5 +284,6 @@
         }
       })
     </script>
+    <script type="text/javascript" src="static/js/asynch_communications.js"></script>
   </body>
 </html>

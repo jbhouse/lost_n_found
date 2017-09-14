@@ -9,7 +9,6 @@
 
     {% if from == "home" %}
 
-      <p>so this right here. this code</p>
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id='reply-button-{{message.pk}}' class='reply-button btn btn-primary' type='button' name='button'>Reply</button>
@@ -25,7 +24,6 @@
 
     {% else %}
 
-      <p>so this right here. this code</p>
       <p id="inbox-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>

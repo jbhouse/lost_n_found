@@ -16,26 +16,9 @@ from django.contrib import messages
 from twilio.rest import Client
 from mainpage.settings import TwilioId,TwilioToken
 
-# account_sid = TwilioId
-# auth_token = TwilioToken
-# client = Client(account_sid, auth_token)
-#
-# message = client.messages.create(
-#         "+15558675309",
-#         body="Jenny please?! I love you <3",
-#         from_="+14158141829",
-#         # media_url="http://www.example.com/hearts.png")
-#
-# print(message.sid)
-
 def CreateText(request):
     if request.method == "POST":
         response_data = {}
-        # print('/'*88)
-        # print(TwilioId)
-        # print('/'*88)
-        # print(TwilioToken)
-        # print('/'*88)
         if request.user.is_authenticated():
             sender = request.user
         message = request.POST.get('message')
