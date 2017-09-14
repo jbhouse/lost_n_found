@@ -9,7 +9,7 @@
 
     {% if from == "home" %}
 
-      <p id="inbox-options-{{message.pk}}">
+      <p id="reply-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id='reply-button-{{message.pk}}' class='reply-button btn btn-primary' type='button' name='button'>Reply</button>
           {% if message.sender.profile.textable == True %}
@@ -24,7 +24,7 @@
 
     {% else %}
 
-      <p id="inbox-options-{{message.pk}}">
+      <p id="reply-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
           {% if message.sender.profile.textable == True %}
@@ -42,7 +42,7 @@
   {% else %}
 
     {% if from == "home" %}
-      <p id="inbox-options-{{message.pk}}">
+      <p id="reply-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
           <button id="email-button-{{message.pk}}" class="email-button btn btn-primary" type="button" name="button">Email</button>
@@ -57,7 +57,7 @@
       </p>
 
     {% else %}
-      <p id="inbox-options-{{message.pk}}">
+      <p id="reply-options-{{message.pk}}">
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id="reply-button-{{message.pk}}" class="reply-button btn btn-primary" type="button" name="button">Reply</button>
           <button id="email-button-{{message.pk}}" class="email-button btn btn-primary" type="button" name="button">Email</button>

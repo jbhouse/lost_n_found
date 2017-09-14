@@ -97,22 +97,22 @@
         // return here
         function attachSecretMessage(marker, itemDescription, currentUserId, emailableStatus, textableStatus) {
           if ((emailableStatus == ' True') && (textableStatus == 'False')) {
-            var userContact = "<div class='reply-buttons'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div></div><h3>"+itemDescription+"</h3>"
+            var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
               content: userContact
             });
           } else if ((emailableStatus == ' True') && (textableStatus == 'True')) {
-            var userContact = "<div class='reply-buttons'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
+            var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
                 content: userContact
               });
           } else if ((emailableStatus == ' False') && (textableStatus == 'True')) {
-            var userContact = "<div class='reply-buttons'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
+            var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
                 content: userContact
               });
           } else {
-            var userContact = "<div class='reply-buttons'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='map-reply-button btn btn-primary' type='button' name='button'>Message</button></div></div><h3>"+itemDescription+"</h3>"
+            var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='map-reply-button btn btn-primary' type='button' name='button'>Message</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
               content: userContact
             });
@@ -273,7 +273,11 @@
         e.preventDefault();
         var that = $(this)
         that.parent().addClass('hidden')
-        $('div.reply-buttons').removeClass('hidden')
+        if (that.parent().prev().hasClass('hidden')) {
+          that.parent().prev().removeClass('hidden')
+        } else {
+          $('#reply-options-'+that.closest('form').attr('id').slice(15,that.closest('form').attr('id').length)).removeClass('hidden')
+        }
       })
 
       $(document).on('submit', 'form.reply-message', function(e){
