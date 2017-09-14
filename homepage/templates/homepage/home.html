@@ -94,28 +94,37 @@
         for (i in markers) {
           attachSecretMessage(markers[i], itemDescriptions[i], userIds[i], emailableStatuses[i], textableStatuses[i])
         }
-        // return here
         function attachSecretMessage(marker, itemDescription, currentUserId, emailableStatus, textableStatus) {
           if ((emailableStatus == ' True') && (textableStatus == 'False')) {
             var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
               content: userContact
             });
+            hasBeenCalled = 0
           } else if ((emailableStatus == ' True') && (textableStatus == 'True')) {
             var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-email-"+currentUserId+"' class='map-email-button'><button id='email-button-"+currentUserId+"' class='map-email-button btn btn-primary' type='button' name='button'>Email</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
                 content: userContact
               });
+            messageHasBeenCalled = 0
+            emailHasBeenCalled = 0
+            textHasBeenCalled = 0
           } else if ((emailableStatus == ' False') && (textableStatus == 'True')) {
             var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='btn btn-primary'>Message</button></div><div id='map-text-"+currentUserId+"' class='map-text-button'><button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
                 content: userContact
               });
+              messageHasBeenCalled = 0
+              emailHasBeenCalled = 0
+              textHasBeenCalled = 0
           } else {
             var userContact = "<div id='reply-options-"+currentUserId+"'><div id='map-reply-"+currentUserId+"' class='map-reply-button'><button id='reply-button-"+currentUserId+"' class='map-reply-button btn btn-primary' type='button' name='button'>Message</button></div></div><h3>"+itemDescription+"</h3>"
             var infowindow = new google.maps.InfoWindow({
               content: userContact
             });
+            messageHasBeenCalled = 0
+            emailHasBeenCalled = 0
+            textHasBeenCalled = 0
           }
           marker.addListener('click', function() {
             infowindow.open(marker.get('map'), marker);
@@ -248,16 +257,26 @@
         e.preventDefault();
         var that = $(this)
         var replyButtonId = that.attr('id').slice(10,that.attr('id').length)
-        that.parent().addClass('hidden')
-        that.parent().siblings().append("<form id='map-reply-form-"+replyButtonId+"' class='reply-message' method='post'><div><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='message' name='submit'><button class='cancelmessage'>cancel</button></form>")
+        if (messageHasBeenCalled < 1) {
+          that.parent().addClass('hidden')
+          that.parent().siblings().append("<form id='map-reply-form-"+replyButtonId+"' class='reply-message' method='post'><div><input id='reply-subject-"+replyButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='reply-message-"+replyButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='message' name='submit'><button class='cancelmessage'>cancel</button></form>")
+          messageHasBeenCalled += 1
+        } else {
+          console.log(replyButtonId);
+        }
       })
 
       $(document).on('click','div.map-email-button',function(e){
         e.preventDefault();
         var that = $(this)
         var emailButtonId = that.attr('id').slice(10,that.attr('id').length)
-        that.parent().addClass('hidden')
-        that.parent().siblings().append(("<form id='email-form-"+emailButtonId+"' class='email-message' method='post'><div><input id='email-subject-"+emailButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='email-message-"+emailButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='email' name='submit'><button class='cancelmessage'>cancel</button></form>"))
+        if (emailHasBeenCalled < 1) {
+          that.parent().addClass('hidden')
+          that.parent().siblings().append(("<form id='email-form-"+emailButtonId+"' class='email-message' method='post'><div><input id='email-subject-"+emailButtonId+"' class='form-control' type='text' placeholder='subject' value=''></div><div class='form-group'><textarea id='email-message-"+emailButtonId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='email' name='submit'><button class='cancelmessage'>cancel</button></form>"))
+          emailHasBeenCalled += 1
+        } else {
+          console.log(emailButtonId);
+        }
       })
 
       $(document).on('click','div.map-text-button',function(e){
@@ -265,8 +284,13 @@
         var that = $(this)
         var textId = that.attr('id').slice(12,that.attr('id').length)
         var contactList = document.getElementsByClassName('reply-buttons')[0]
-        contactList.classList.add('hidden')
-        that.parent().parent().append("<form id='text-form-"+textId+"' class='text-message' method='post'><div class='form-group'><textarea id='text-message-"+textId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='send text' name='submit'></form>")
+        if (textHasBeenCalled < 1) {
+          contactList.classList.add('hidden')
+          that.parent().parent().append("<form id='text-form-"+textId+"' class='text-message' method='post'><div class='form-group'><textarea id='text-message-"+textId+"' class='form-control' rows='4' placeholder='message' value=''></textarea></div><input type='submit' value='send text' name='submit'></form>")
+          textHasBeenCalled += 1
+          } else {
+          console.log(textId);
+          }
       })
 
       $(document).on('click', ":button.cancelmessage", function(e){
@@ -276,7 +300,13 @@
         if (that.parent().prev().hasClass('hidden')) {
           that.parent().prev().removeClass('hidden')
         } else {
-          $('#reply-options-'+that.closest('form').attr('id').slice(15,that.closest('form').attr('id').length)).removeClass('hidden')
+          if (that.closest('form').attr('id').slice(0,6) == 'map-re') {
+            $('#reply-options-'+that.closest('form').attr('id').slice(15,that.closest('form').attr('id').length)).removeClass('hidden')
+          } else if (that.closest('form').attr('id').slice(0,6) == 'email-') {
+            $('#reply-options-'+that.closest('form').attr('id').slice(11,that.closest('form').attr('id').length)).removeClass('hidden')
+          } else {
+            console.log('text');
+          }
         }
       })
 
