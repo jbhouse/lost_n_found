@@ -22,7 +22,7 @@
         sendReply();
         function sendReply() {
           $.ajax({
-            url  : '{% url 'private_messages:new_message' %}',
+            url  : "{% url 'private_messages:new_message' %}",
             type : "POST",
             data : {
               recipient : recipientId,
@@ -67,7 +67,7 @@
         sendText();
         function sendText() {
           $.ajax({
-            url  : '{% url 'private_messages:text' %}',
+            url  : "{% url 'private_messages:text' %}",
             type : "POST",
             data : {
               recipient : recipientId,
@@ -96,7 +96,7 @@
       sendMessage();
       function sendMessage(){
         $.ajax({
-          url  : '{% url 'private_messages:new_message' %}',
+          url  : "{% url 'private_messages:new_message' %}",
           type : "POST",
           data : { recipient: $('#id_recipient').val(), subject: $('#id_subject').val(), message: $('#id_message').val() },
           beforeSend: function (xhr) {

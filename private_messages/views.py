@@ -44,8 +44,11 @@ def CreatePrivateMessage(request):
         message = request.POST.get('message')
         subject = request.POST.get('subject')
         recipient_id = request.POST.get('recipient')
+        print(recipient_id)
         recipient = get_object_or_404(User, pk=recipient_id)
+        print(recipient)
         new_pm = PrivateMessage.objects.create_private_message(sender,recipient)
+        print(new_pm)
         new_pm.subject = subject
         new_pm.message = message
         new_pm.save()

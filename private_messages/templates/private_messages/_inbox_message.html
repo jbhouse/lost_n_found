@@ -13,7 +13,7 @@
         {% if message.sender.username != request.user.username and not hide_delete %}
           <button id='reply-button-{{message.pk}}' class='reply-button btn btn-primary' type='button' name='button'>Reply</button>
           {% if message.sender.profile.textable == True %}
-            <button id="text-button-{{message.pk}}" class="text-button btn btn-primary" type="button" name="button">Text</button>
+            <button id='text-button-{{message.pk}}' class='text-button btn btn-primary' type='button' name='button'>Text</button>
           {% endif %}
           <a class='pm-delete' href="{% url 'private_messages:deletehome' pk=message.pk %}" title="delete" class="btn btn-simple">
             <span class="glyphicon glyphicon-remove text-danger"></span>
