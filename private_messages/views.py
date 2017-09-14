@@ -44,14 +44,12 @@ def CreatePrivateMessage(request):
         message = request.POST.get('message')
         subject = request.POST.get('subject')
         recipient_id = request.POST.get('recipient')
-        print(recipient_id)
         recipient = get_object_or_404(User, pk=recipient_id)
-        print(recipient)
         new_pm = PrivateMessage.objects.create_private_message(sender,recipient)
-        print(new_pm)
         new_pm.subject = subject
         new_pm.message = message
         new_pm.save()
+        response_data['onMap'] = request.POST.get('onMap')
         response_data['recipient_id'] = recipient_id
         response_data['sender_id'] = sender.pk
         response_data['message_pk'] = new_pm.pk
